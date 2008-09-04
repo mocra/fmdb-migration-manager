@@ -1,0 +1,18 @@
+class String
+  def underscore
+    gsub(/::/, '/').
+    gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').
+    gsub(/([a-z\d])([A-Z])/,'\1_\2').
+    downcase
+  end
+end
+
+Autotest.add_hook :initialize do |at|
+  at.add_mapping(/Classes\/(.*)\.[mh]/) do |_, m|
+    ["test/test_#{m[1].underscore}.rb"]
+  end
+end
+
+Autotest.add_hook :run_command do |at|
+  system "rake compile"
+end
