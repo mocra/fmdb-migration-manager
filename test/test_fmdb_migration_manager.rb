@@ -53,9 +53,17 @@ class TestFmdbMigrationManager < Test::Unit::TestCase
           assert_equal(0, @results.columnIndexForName("id"))
         end
         
-        should "autoincrement primary key column" do
-          @db.executeUpdate "insert into people default values"
-          @db.executeUpdate "insert into people default values"
+        context "then insert some rows" do
+          setup do
+            @db.executeUpdate "insert into people default values"
+            @db.executeUpdate "insert into people default values"
+            @results.close
+          end
+          
+          should "autoincrement primary key column" do
+            @results = find_all
+            
+          end
         end
       end
       

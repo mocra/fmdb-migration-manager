@@ -14,6 +14,9 @@
 		315E9EFB0E6FF9C5000A84C0 /* fmdb.m in Sources */ = {isa = PBXBuildFile; fileRef = 315E9EF40E6FF9C5000A84C0 /* fmdb.m */; };
 		315E9EFC0E6FF9C5000A84C0 /* FMResultSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 315E9EF50E6FF9C5000A84C0 /* FMResultSet.h */; };
 		315E9EFD0E6FF9C5000A84C0 /* FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 315E9EF60E6FF9C5000A84C0 /* FMResultSet.m */; };
+		31C43B710E72AAD80006AF5D /* FmdbMigrationManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 31C43B6F0E72AAD80006AF5D /* FmdbMigrationManager.h */; };
+		31C43B720E72AAD80006AF5D /* FmdbMigrationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31C43B700E72AAD80006AF5D /* FmdbMigrationManager.m */; };
+		31C43B7D0E72AB2E0006AF5D /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 31C43B7C0E72AB2E0006AF5D /* libsqlite3.dylib */; };
 		D2AAC0CC05546C4400DB518D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
 /* End PBXBuildFile section */
 
@@ -31,6 +34,10 @@
 		315E9EFF0E6FF9F9000A84C0 /* test_helper.rb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.ruby; name = test_helper.rb; path = test/test_helper.rb; sourceTree = "<group>"; };
 		315E9F010E6FFA0E000A84C0 /* test_unit.rake */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = test_unit.rake; path = tasks/test_unit.rake; sourceTree = "<group>"; };
 		315E9F020E6FFA18000A84C0 /* Rakefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Rakefile; sourceTree = "<group>"; };
+		31C43B6E0E72AACB0006AF5D /* test_fmdb_migration_manager.rb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.ruby; name = test_fmdb_migration_manager.rb; path = test/test_fmdb_migration_manager.rb; sourceTree = "<group>"; };
+		31C43B6F0E72AAD80006AF5D /* FmdbMigrationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FmdbMigrationManager.h; path = Classes/FmdbMigrationManager.h; sourceTree = "<group>"; };
+		31C43B700E72AAD80006AF5D /* FmdbMigrationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FmdbMigrationManager.m; path = Classes/FmdbMigrationManager.m; sourceTree = "<group>"; };
+		31C43B7C0E72AB2E0006AF5D /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		32DBCF5E0370ADEE00C91783 /* fmdb-migration-manager_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "fmdb-migration-manager_Prefix.pch"; sourceTree = "<group>"; };
 		D2A6134D07B89F6200DD23D3 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		D2AAC0C705546C1D00DB518D /* fmdb-migration-manager.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "fmdb-migration-manager.dylib"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -42,6 +49,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D2AAC0CC05546C4400DB518D /* Cocoa.framework in Frameworks */,
+				31C43B7D0E72AB2E0006AF5D /* libsqlite3.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +73,7 @@
 				32C88DFF0371C24200C91783 /* Other Sources */,
 				0867D69AFE84028FC02AAC07 /* External Frameworks and Libraries */,
 				034768DFFF38A50411DB9C8B /* Products */,
+				31C43B7C0E72AB2E0006AF5D /* libsqlite3.dylib */,
 			);
 			name = "fmdb-migration-manager";
 			sourceTree = "<group>";
@@ -81,6 +90,8 @@
 		08FB77AEFE84172EC02AAC07 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				31C43B6F0E72AAD80006AF5D /* FmdbMigrationManager.h */,
+				31C43B700E72AAD80006AF5D /* FmdbMigrationManager.m */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -120,6 +131,7 @@
 		315E9EFE0E6FF9E8000A84C0 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				31C43B6E0E72AACB0006AF5D /* test_fmdb_migration_manager.rb */,
 				315E9EFF0E6FF9F9000A84C0 /* test_helper.rb */,
 			);
 			name = Tests;
@@ -153,6 +165,7 @@
 				315E9EF70E6FF9C5000A84C0 /* FMDatabase.h in Headers */,
 				315E9EF90E6FF9C5000A84C0 /* FMDatabaseAdditions.h in Headers */,
 				315E9EFC0E6FF9C5000A84C0 /* FMResultSet.h in Headers */,
+				31C43B710E72AAD80006AF5D /* FmdbMigrationManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -203,6 +216,7 @@
 				315E9EFA0E6FF9C5000A84C0 /* FMDatabaseAdditions.m in Sources */,
 				315E9EFB0E6FF9C5000A84C0 /* fmdb.m in Sources */,
 				315E9EFD0E6FF9C5000A84C0 /* FMResultSet.m in Sources */,
+				31C43B720E72AAD80006AF5D /* FmdbMigrationManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
