@@ -36,7 +36,7 @@ class TestFmdbMigrationManager < Test::Unit::TestCase
       context "then create table with no explicit columns" do
         setup do
           @m1 = @migration_manager.createTable("people")
-          @results = @db.executeQuery "select * from people"
+          @results = find_all "people"
         end
         
         teardown { @results.close if @results }
@@ -49,8 +49,13 @@ class TestFmdbMigrationManager < Test::Unit::TestCase
           assert(!@results.next?, "Should be no results")
         end
         
-        should_eventually "have default column 'id'" do
-          
+        should "have default column 'id'" do
+          assert_equal(0, @results.columnIndexForName("id"))
+        end
+        
+        should "autoincrement primary key column" do
+          @db.executeUpdate "insert into people default values"
+          @db.executeUpdate "insert into people default values"
         end
       end
       

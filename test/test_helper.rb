@@ -14,5 +14,9 @@ class Test::Unit::TestCase
       assert(!@db.hadError?, "Last error (#{@db.lastErrorCode}): #{@db.lastErrorMessage}")
     end
   end
+  
+  def find_all(table_name)
+    @db.executeQuery "select * from #{table_name}"
+  end
 end
     
