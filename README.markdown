@@ -64,6 +64,14 @@ Internally, if a migration object needs to have its `-up` method invoked, the au
 will actually call `-upWithDatabase:(FMDatabase *)db`, which in turn calls `-up`. Similarly
 for `-down`.
 
+### FmdbMigrationManager
+
+This class has a list of individual micro-changes to the database schema called *migrations*, represented
+as instances of `FmdbMigration` subclasses. Each `FmdbMigration` instance can create or drop whole tables,
+add/remove individual columns, or change columns. Which migrations are executed depends upon the current
+migration status of the target environment. This information is stored in a special table `schema_info`
+which is created and managed by `FmdbMigrationManager`.
+
 ## Running tests
 
 This project has a suite of tests written in Ruby, although the library is in Objective-C.
