@@ -11,6 +11,20 @@
 
 @implementation FmdbMigrationManager
 
+@synthesize db;
+
+- (id)initWithDatabase:(FMDatabase *)sqliteDatabase {
+  if ([super init]) {
+    db = sqliteDatabase;
+    return self;
+  }
+  return nil;
+}
+
+- (void)createTable:(NSString *)tableName {
+  NSString *cmd = [@"create table " stringByAppendingString:tableName];
+  [db executeUpdate:[cmd stringByAppendingString:@" (id integer)"]];
+}
 @end
 
 

@@ -15,13 +15,47 @@ class TestFmdbMigrationManager < Test::Unit::TestCase
       @db.open
     end
     
-    teardown do
-      FileUtils.rm @db_path if File.exists?(@db_path)
-    end
+    teardown { FileUtils.rm @db_path if File.exists?(@db_path) }
 
     should "create sqlite db" do
       assert File.exists?(@db_path)
     end
+    
+    should "have no initial errors" do
+      assert(!@db.hadError?, "Last error (#{@db.lastErrorCode}): #{@db.lastErrorMessage}")
+    end
+    
+    context "prepare for migrations" do
+      setup do
+        @migration_manager = OSX::FmdbMigrationManager.alloc.initWithDatabase(@db)
+      end
+      
+      should "have migration manager" do
+        assert_not_nil(@migration_manager)
+        assert_instance_of(OSX::FmdbMigrationManager, @migration_manager)
+      end
+
+      context "then create table with no explicit columns" do
+        setup do
+          @m1 = @migration_manager.createTable("people")
+          @results = @db.executeQuery "select * from people"
+        end
+        
+        teardown { @results.close if @results }
+        
+        should "not cause errors" do
+          assert(!@db.hadError?, "Last error (#{@db.lastErrorCode}): #{@db.lastErrorMessage}")
+        end
+
+        should "have table 'people'" do
+          assert_not_nil(@results)
+          assert_instance_of(OSX::FMResultSet, @results)
+          assert(!@results.next?, "Should be no results")
+        end
+      end
+      
+    end
+    
   end
   
 end

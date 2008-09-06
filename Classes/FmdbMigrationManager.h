@@ -10,7 +10,10 @@
 #import "FMDatabase.h"
 
 @interface FmdbMigrationManager : NSObject {
-
+  FMDatabase *db;
 }
+@property (retain) FMDatabase *db;
 
+- (id)initWithDatabase:(FMDatabase *)sqliteDatabase;
+- (void)createTable:(NSString *)tableName;
 @end
