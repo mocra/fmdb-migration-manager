@@ -22,7 +22,7 @@
 }
 
 - (void)createTable:(NSString *)tableName {
-  NSString *sql = [NSString stringWithFormat:@"create table %@ (id integer)", tableName];
+  NSString *sql = [NSString stringWithFormat:@"create table %@ (id integer primary key autoincrement)", tableName];
   [db_ executeUpdate:sql];
 }
 

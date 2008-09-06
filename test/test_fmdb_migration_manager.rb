@@ -62,7 +62,12 @@ class TestFmdbMigrationManager < Test::Unit::TestCase
           
           should "autoincrement primary key column" do
             @results = find_all "people"
-            
+            expected_id = 1
+            while @results.next?
+              assert_equal(expected_id, @results.intForColumn("id"), "default id value incorrect")
+              expected_id += 1
+            end
+            assert_equal(3, expected_id, "should only be 2 returned rows")
           end
         end
       end
