@@ -15,6 +15,4 @@
 @property (retain) FMDatabase *db;
 
 - (id)initWithDatabase:(FMDatabase *)db;
-- (void)createTable:(NSString *)tableName;
-- (void)dropTable:(NSString *)tableName;
 @end

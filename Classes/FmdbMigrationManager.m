@@ -15,20 +15,10 @@
 
 - (id)initWithDatabase:(FMDatabase *)db {
   if ([super init]) {
-    db_ = db;
+    self.db = db;
     return self;
   }
   return nil;
-}
-
-- (void)createTable:(NSString *)tableName {
-  NSString *sql = [NSString stringWithFormat:@"create table %@ (id integer primary key autoincrement)", tableName];
-  [db_ executeUpdate:sql];
-}
-
-- (void)dropTable:(NSString *)tableName {
-  NSString *sql = [NSString stringWithFormat:@"drop table if exists %@", tableName];
-  [db_ executeUpdate:sql];
 }
 
 - (void)dealloc
