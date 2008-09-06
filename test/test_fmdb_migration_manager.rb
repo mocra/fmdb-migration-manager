@@ -12,6 +12,7 @@ class TestFmdbMigrationManager < Test::Unit::TestCase
     setup do
       @db_path = "/tmp/fmdb-test.db"
       @db = OSX::FMDatabase.databaseWithPath @db_path
+      @db.open
     end
     
     teardown do
