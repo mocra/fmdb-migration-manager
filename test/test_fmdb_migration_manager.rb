@@ -21,9 +21,7 @@ class TestFmdbMigrationManager < Test::Unit::TestCase
       assert File.exists?(@db_path)
     end
     
-    should "have no initial errors" do
-      assert(!@db.hadError?, "Last error (#{@db.lastErrorCode}): #{@db.lastErrorMessage}")
-    end
+    should_have_no_errors
     
     context "prepare for migrations" do
       setup do
@@ -43,14 +41,16 @@ class TestFmdbMigrationManager < Test::Unit::TestCase
         
         teardown { @results.close if @results }
         
-        should "not cause errors" do
-          assert(!@db.hadError?, "Last error (#{@db.lastErrorCode}): #{@db.lastErrorMessage}")
-        end
+        should_have_no_errors
 
         should "have table 'people'" do
           assert_not_nil(@results)
           assert_instance_of(OSX::FMResultSet, @results)
           assert(!@results.next?, "Should be no results")
+        end
+        
+        should_eventually "have default column 'id'" do
+          
         end
       end
       
