@@ -54,7 +54,7 @@
 
 - (id)initWithDatabase:(FMDatabase *)db {
   if ([super init]) {
-    db_ = db;
+    self.db = db;
     return self;
   }
   return nil;
