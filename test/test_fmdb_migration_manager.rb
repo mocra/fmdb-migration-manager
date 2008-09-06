@@ -70,6 +70,19 @@ class TestFmdbMigrationManager < Test::Unit::TestCase
             assert_equal(3, expected_id, "should only be 2 returned rows")
           end
         end
+        
+        context "then destroy table" do
+          setup do
+            @results.close
+            @migration_manager.dropTable "people"
+            @results = find_all "people"
+          end
+
+          should "have destroyed table" do
+            assert(@db.hadError?, "Should be an error for query on non-existent table")
+          end
+        end
+        
       end
       
     end

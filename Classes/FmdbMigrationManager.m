@@ -26,6 +26,11 @@
   [db_ executeUpdate:sql];
 }
 
+- (void)dropTable:(NSString *)tableName {
+  NSString *sql = [NSString stringWithFormat:@"drop table if exists %@", tableName];
+  [db_ executeUpdate:sql];
+}
+
 - (void)dealloc
 {
  [db_ close];

@@ -16,4 +16,5 @@
 
 - (id)initWithDatabase:(FMDatabase *)sqliteDatabase;
 - (void)createTable:(NSString *)tableName;
+- (void)dropTable:(NSString *)tableName;
 @end
