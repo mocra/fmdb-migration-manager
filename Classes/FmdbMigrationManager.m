@@ -13,6 +13,7 @@
 
 @end
 
+
 // This initialization function gets called when we import the Ruby module.
 // It doesn't need to do anything because the RubyCocoa bridge will do
 // all the initialization work.

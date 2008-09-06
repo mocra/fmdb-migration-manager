@@ -10,10 +10,18 @@ end
 
 task :compile => "objc:compile"
 
-file "build/fmdb.o" => FileList['fmdb/FM*'] do
-  files = FileList['fmdb/FM*.m'].map { |f| "-c #{f}" }.join(" ")
-  sh "gcc #{files} -framework Foundation -lsqlite3 -I#{fmdb_dir} -o build/fmdb.o"
+fmdb_dir = File.dirname(__FILE__) + "/fmdb"
+
+FileList['fmdb/FM*.m'].each do |fmdb_file|
+  FileUtils.mkdir_p "build"
+  base = fmdb_file.gsub(/\.m$/,'')
+  dot_o = "build/#{File.basename base}.o"
+  file dot_o => ["#{base}.m", "#{base}.h"] do
+    sh "gcc -c #{base}.m -o #{dot_o}"
+  end
 end
+
+fmdb_o_files = FileList['fmdb/FM*.m'].map { |fmdb_file| File.join("build", File.basename(fmdb_file).gsub(/m$/,'o')) }
 
 namespace :objc do
   # look for Classes/*.m files containing a line "void Init_ClassName"
@@ -23,7 +31,7 @@ namespace :objc do
     path =~ /Classes\/(.*)\.m/
     model_name = $1
 
-    task :compile => model_name do
+    task :compile => "build/bundles/#{model_name}.bundle" do
       if Dir.glob("**/#{model_name}.bundle").length == 0
         STDERR.puts "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
         STDERR.puts "Bundle actually failed to build."
@@ -32,14 +40,11 @@ namespace :objc do
       end
     end
 
-    task model_name.to_sym => "build/bundles/#{model_name}.bundle"
-
-    fmdb_dir = File.dirname(__FILE__) + "/fmdb"
-    
-    file "build/bundles/#{model_name}.bundle" => ["Classes/#{model_name}.m", "Classes/#{model_name}.h"] do |t|
+    file "build/bundles/#{model_name}.bundle" => fmdb_o_files + ["Classes/#{model_name}.m", "Classes/#{model_name}.h"] do |t|
       FileUtils.mkdir_p "build/bundles"
       FileUtils.rm Dir["build/bundles/#{model_name}.bundle"]
-      sh "gcc -o build/bundles/#{model_name}.bundle -o build/fmdb.o -bundle -framework Foundation -lsqlite3 -I#{fmdb_dir} Classes/#{model_name}.m"
+      fmdb_files = FileList['build/FM*.o'].join(" ")
+      sh "gcc -o build/bundles/#{model_name}.bundle #{fmdb_files} -bundle -framework Foundation -lsqlite3 -I#{fmdb_dir} Classes/#{model_name}.m"
     end
   end
 
