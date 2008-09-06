@@ -39,6 +39,10 @@
 #pragma mark -
 #pragma mark Helper methods for manipulating database schema
 
+- (void)createTable:(NSString *)tableName withColumns:(NSArray *)columns {
+  
+}
+
 - (void)createTable:(NSString *)tableName {
   NSString *sql = [NSString stringWithFormat:@"create table %@ (id integer primary key autoincrement)", tableName];
   [db_ executeUpdate:sql];

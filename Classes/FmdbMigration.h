@@ -23,6 +23,7 @@
 - (void)downWithDatabase:(FMDatabase *)db;
 
 - (void)createTable:(NSString *)tableName;
+- (void)createTable:(NSString *)tableName withColumns:(NSArray *)columns;
 - (void)dropTable:(NSString *)tableName;
 
 // This init method exists for the purposes of unit testing.

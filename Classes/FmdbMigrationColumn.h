@@ -10,7 +10,17 @@
 
 
 @interface FmdbMigrationColumn : NSObject {
-
+  NSString *columnName_;
+  NSString *columnType_;
+  id defaultValue_;
 }
+@property (retain) NSString *columnName;
+@property (retain) NSString *columnType;
+@property (retain) id defaultValue;
 
++ (FmdbMigrationColumn*)columnWithColumnName:(NSString*)columnName
+                                  columnType:(NSString*)columnType;
++ (FmdbMigrationColumn*)columnWithColumnName:(NSString*)columnName
+                                  columnType:(NSString*)columnType
+                                defaultValue:(id)defaultValue;
 @end

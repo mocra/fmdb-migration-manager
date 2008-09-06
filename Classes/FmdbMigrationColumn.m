@@ -10,5 +10,20 @@
 
 
 @implementation FmdbMigrationColumn
+@synthesize columnName=columnName_, columnType=columnType_, defaultValue=defaultValue_;
++ (FmdbMigrationColumn*)columnWithColumnName:(NSString*)columnName
+                                  columnType:(NSString*)columnType
+{
+  return [[[FmdbMigrationColumn alloc] init] autorelease];
+}
+
++ (FmdbMigrationColumn*)columnWithColumnName:(NSString*)columnName
+                                  columnType:(NSString*)columnType
+                                defaultValue:(id)defaultValue
+{
+  FmdbMigrationColumn* column = [self columnWithColumnName:columnName columnType:columnType];
+  column.defaultValue = defaultValue;
+  return column;
+}
 
 @end
