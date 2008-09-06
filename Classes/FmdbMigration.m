@@ -10,6 +10,7 @@
 
 
 @implementation FmdbMigration
+@synthesize db=db_;
 
 + (id)migration {
   return [[[self alloc] init] autorelease];

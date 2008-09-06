@@ -12,6 +12,8 @@
 @interface FmdbMigration : NSObject {
   FMDatabase *db_;
 }
+@property (retain) FMDatabase *db;
+
 + (id)migration;
 
 - (void)up;

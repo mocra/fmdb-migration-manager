@@ -9,23 +9,9 @@ require "create_accounts"
 class TestFmdbMigration < Test::Unit::TestCase
   include OSX
   
-  should "have FmdbMigration class" do
-    assert FmdbMigration
-  end
-  
   context "with clean sqlite db" do
-    setup do
-      @db_path = "/tmp/fmdb-test.db"
-      @db = FMDatabase.databaseWithPath @db_path
-      @db.open
-    end
-    
-    teardown { FileUtils.rm @db_path if File.exists?(@db_path) }
-
-    should "create sqlite db" do
-      assert File.exists?(@db_path)
-    end
-    
+    setup_db
+    teardown_db
     should_have_no_errors
     
     # this block is for testing individual helpers, such as createTable/dropTable etc
