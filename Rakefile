@@ -10,10 +10,15 @@ end
 
 task :compile => "objc:compile"
 
+file "build/fmdb.o" => FileList['fmdb/FM*'] do
+  files = FileList['fmdb/FM*.m'].map { |f| "-c #{f}" }.join(" ")
+  sh "gcc #{files} -framework Foundation -lsqlite3 -I#{fmdb_dir} -o build/fmdb.o"
+end
+
 namespace :objc do
   # look for Classes/*.m files containing a line "void Init_ClassName"
   # These are the primary classes for bundles; make a bundle for each
-  model_file_paths = `find Classes/*.m -exec grep -l "^void Init_" {} \\;`.split("\n")
+  model_file_paths = `find Classes/*.m  -exec grep -l "^void Init_" {} \\;`.split("\n")
   model_file_paths.each do |path|
     path =~ /Classes\/(.*)\.m/
     model_name = $1
@@ -29,10 +34,12 @@ namespace :objc do
 
     task model_name.to_sym => "build/bundles/#{model_name}.bundle"
 
+    fmdb_dir = File.dirname(__FILE__) + "/fmdb"
+    
     file "build/bundles/#{model_name}.bundle" => ["Classes/#{model_name}.m", "Classes/#{model_name}.h"] do |t|
       FileUtils.mkdir_p "build/bundles"
       FileUtils.rm Dir["build/bundles/#{model_name}.bundle"]
-      sh "gcc -o build/bundles/#{model_name}.bundle -bundle -framework Foundation Classes/#{model_name}.m"
+      sh "gcc -o build/bundles/#{model_name}.bundle -o build/fmdb.o -bundle -framework Foundation -lsqlite3 -I#{fmdb_dir} Classes/#{model_name}.m"
     end
   end
 
