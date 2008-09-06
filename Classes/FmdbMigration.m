@@ -11,6 +11,29 @@
 
 @implementation FmdbMigration
 
+#pragma mark -
+#pragma mark up/down methods
+
+- (void)up {
+  NSLog([NSString stringWithFormat:@"%s: -up method not implemented", [self className]]);
+}
+
+- (void)down {
+  NSLog([NSString stringWithFormat:@"%s: -up method not implemented", [self className]]);
+}
+
+// - (void)upWithDatabase:(FMDatabase *)db {
+//   db_ = db;
+//   [self up];
+// }
+// - (void)downWithDatabase:(FMDatabase *)db {
+//   db_ = db;
+//   [self down];
+// }
+
+#pragma mark -
+#pragma mark Helper methods for manipulating database schema
+
 - (void)createTable:(NSString *)tableName {
   NSString *sql = [NSString stringWithFormat:@"create table %@ (id integer primary key autoincrement)", tableName];
   [db_ executeUpdate:sql];
