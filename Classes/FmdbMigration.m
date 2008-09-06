@@ -6,7 +6,7 @@
 //  Copyright 2008 Mocra. All rights reserved.
 //
 
-#import "FmdbMigrationColumn.h"
+#import "FmdbMigration.h"
 
 
 @implementation FmdbMigration

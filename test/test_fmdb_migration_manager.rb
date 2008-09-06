@@ -4,14 +4,16 @@ require "FmdbMigrationManager.bundle"
 OSX::ns_import :FmdbMigrationManager
 
 class TestFmdbMigrationManager < Test::Unit::TestCase
+  include OSX
+  
   should "have FmdbMigrationManager class" do
-    assert OSX::FmdbMigrationManager
+    assert FmdbMigrationManager
   end
   
   context "with clean sqlite db" do
     setup do
       @db_path = "/tmp/fmdb-test.db"
-      @db = OSX::FMDatabase.databaseWithPath @db_path
+      @db = FMDatabase.databaseWithPath @db_path
       @db.open
     end
     
@@ -25,7 +27,7 @@ class TestFmdbMigrationManager < Test::Unit::TestCase
     
     context "prepare for migrations" do
       setup do
-        @migration_manager = OSX::FmdbMigrationManager.alloc.initWithDatabase(@db)
+        @migration_manager = FmdbMigrationManager.alloc.initWithDatabase(@db)
       end
       
       should "have migration manager" do
@@ -83,6 +85,52 @@ class TestFmdbMigrationManager < Test::Unit::TestCase
           end
         end
         
+      end
+      
+      context "then create table with columns and default values" do
+        setup do
+          # [mm createTable:@"students" withColumns:[NSArray arrayWithObjects:
+          #  [FmdbMigrationColumn columnWithColumnName:@"first_name" columnType:@"string"],
+          #  [FmdbMigrationColumn columnWithColumnName:@"age" columnType:@"integer" defaultValue:21],
+          #  nil];
+          @m1 = @migration_manager.createTable_withColumns("students", [
+            FmdbMigrationColumn.columnWithColumnName_columnType("first_name", "string"),
+            FmdbMigrationColumn.columnWithColumnName_columnType_defaultValue("age", "string", 21)
+          ])
+          @results = find_all "students"
+        end
+        
+        teardown { @results.close if @results }
+        
+        should_have_no_errors
+
+        should "have table 'students'" do
+          assert_not_nil(@results)
+          assert_instance_of(OSX::FMResultSet, @results)
+          assert(!@results.next?, "Should be no results")
+        end
+        
+        should "have default column 'id'" do
+          assert_equal(0, @results.columnIndexForName("id"))
+        end
+
+        should "have default column 'first_name'" do
+          assert_equal(1, @results.columnIndexForName("first_name"))
+        end
+
+        should "have default column 'age'" do
+          assert_equal(2, @results.columnIndexForName("age"))
+        end
+      end
+
+      context "and construct migration with up/down" do
+        setup do
+          
+        end
+
+        should "description" do
+          
+        end
       end
       
     end
