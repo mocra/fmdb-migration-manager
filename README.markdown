@@ -67,10 +67,14 @@ for `-down`.
 ### FmdbMigrationManager
 
 This class has a list of individual micro-changes to the database schema called *migrations*, represented
-as instances of `FmdbMigration` subclasses. Each `FmdbMigration` instance can create or drop whole tables,
-add/remove individual columns, or change columns. Which migrations are executed depends upon the current
+as instances of `FmdbMigration` subclasses. 
+
+Each `FmdbMigration` instance can create or drop whole tables, add/remove individual columns, or change columns. 
+
+Which migrations are executed depends upon the current
 migration status of the target environment. This information is stored in a special table `schema_info`
-which is created and managed by `FmdbMigrationManager`.
+which is created and managed by `FmdbMigrationManager`. The user/developer does not need to worry about
+this table.
 
 ## Running tests
 
