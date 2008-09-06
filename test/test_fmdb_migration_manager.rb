@@ -55,9 +55,9 @@ class TestFmdbMigrationManager < Test::Unit::TestCase
         
         context "then insert some rows" do
           setup do
-            @db.executeUpdate "insert into people default values"
-            @db.executeUpdate "insert into people default values"
             @results.close
+            @db.executeUpdate "insert into people default values"
+            @db.executeUpdate "insert into people default values"
           end
           
           should "autoincrement primary key column" do
