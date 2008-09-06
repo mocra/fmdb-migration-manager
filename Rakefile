@@ -12,6 +12,7 @@ task :compile => "objc:compile"
 
 fmdb_dir = File.dirname(__FILE__) + "/fmdb"
 
+# compile fmdb/*.m files into build/*.o files
 FileList['fmdb/FM*.m'].each do |fmdb_file|
   FileUtils.mkdir_p "build"
   base = fmdb_file.gsub(/\.m$/,'')

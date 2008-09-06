@@ -11,7 +11,7 @@
 
 @implementation FmdbMigrationManager
 
-@synthesize db;
+@synthesize db=db_;
 
 - (id)initWithDatabase:(FMDatabase *)sqliteDatabase {
   if ([super init]) {
@@ -23,13 +23,13 @@
 
 - (void)createTable:(NSString *)tableName {
   NSString *sql = [NSString stringWithFormat:@"create table %@ (id integer)", tableName];
-  [db executeUpdate:sql];
+  [db_ executeUpdate:sql];
 }
 
 - (void)dealloc
 {
- [db close];
- [db release];
+ [db_ close];
+ [db_ release];
  
  [super dealloc];
 }

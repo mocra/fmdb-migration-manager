@@ -10,7 +10,7 @@
 #import "FMDatabase.h"
 
 @interface FmdbMigrationManager : NSObject {
-  FMDatabase *db;
+  FMDatabase *db_;
 }
 @property (retain) FMDatabase *db;
 
