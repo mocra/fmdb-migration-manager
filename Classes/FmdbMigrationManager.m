@@ -15,15 +15,23 @@
 
 - (id)initWithDatabase:(FMDatabase *)sqliteDatabase {
   if ([super init]) {
-    db = sqliteDatabase;
+    self.db = sqliteDatabase;
     return self;
   }
   return nil;
 }
 
 - (void)createTable:(NSString *)tableName {
-  NSString *cmd = [@"create table " stringByAppendingString:tableName];
-  [db executeUpdate:[cmd stringByAppendingString:@" (id integer)"]];
+  NSString *sql = [NSString stringWithFormat:@"create table %@ (id integer)", tableName];
+  [db executeUpdate:sql];
+}
+
+- (void)dealloc
+{
+ [db close];
+ [db release];
+ 
+ [super dealloc];
 }
 @end
 

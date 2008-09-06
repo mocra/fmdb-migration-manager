@@ -61,7 +61,7 @@ class TestFmdbMigrationManager < Test::Unit::TestCase
           end
           
           should "autoincrement primary key column" do
-            @results = find_all
+            @results = find_all "people"
             
           end
         end
