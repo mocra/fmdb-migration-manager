@@ -26,6 +26,43 @@ yet.
     FmdbMigrationManager* migrationManager = [[FmdbMigrationManager alloc] initWithDatabase:db];
   
     [migrationManager createTable:@"people"];
+    
+### Using migrations
+
+Here is the basic idea for what migrations will look like, and how to order them:
+
+    self.migrations = [NSArray arrayWithObjects:
+        [CreateStudents migration], // 1
+        [CreateStaffMembers migration], // 2
+        [AddStudentNumberToStudents migration], // 3
+      nil
+      ];
+
+Note, the `+migration` method is equivalent to `[[[CreateStudents alloc] init] autorelease]` just much shorter. 
+
+Each migration class looks something like:
+
+    @interface CreateStudents : FmdbMigration
+    {
+    }
+    @end
+
+    @implementation CreateStudents
+    - (void)up {
+      [self createTable:@"students" withColumns:[NSArray arrayWithObjects:
+          [FmdbMigrationColumn columnWithColumnName:@"first_name" columnType:@"string"],
+          [FmdbMigrationColumn columnWithColumnName:@"age" columnType:@"integer" defaultValue:21],
+          nil];
+    }
+    - (void)down {
+      [self dropTable:@"students"];
+    }
+    @end
+
+
+Internally, if a migration object needs to have its `-up` method invoked, the automated manager
+will actually call `-upWithDatabase:(FMDatabase *)db`, which in turn calls `-up`. Similarly
+for `-down`.
 
 ## Running tests
 
