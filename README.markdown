@@ -11,7 +11,7 @@ your Objective-C (iPhone/Cocoa) applications.
 
 Pre-alpha - I've just started. The critical aspect of this project is that it has a Ruby-based test suite.
 
-For tests, see test/test_*.rb files.
+For tests, see `test/test_*.rb` files.
 
 To build and run tests, run `rake`. If you have autotest installed, run `autotest` to build and run tests automatically with file changes.
 
@@ -20,10 +20,10 @@ To build and run tests, run `rake`. If you have autotest installed, run `autotes
 The follow is not the target API, just a sample of what currently works. There is no versioning or anything useful
 yet.
 
-  FMDatabase* db = [FMDatabase databaseWithPath:@"/tmp/tmp.db"];
-  [db open];
+    FMDatabase* db = [FMDatabase databaseWithPath:@"/tmp/tmp.db"];
+    [db open];
   
-  FmdbMigrationManager* migrationManager = [[FmdbMigrationManager alloc] initWithDatabase:db];
+    FmdbMigrationManager* migrationManager = [[FmdbMigrationManager alloc] initWithDatabase:db];
   
-  [migrationManager createTable:@"people"];
+    [migrationManager createTable:@"people"];
   
