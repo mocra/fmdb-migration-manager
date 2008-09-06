@@ -13,9 +13,9 @@
 
 @synthesize db=db_;
 
-- (id)initWithDatabase:(FMDatabase *)sqliteDatabase {
+- (id)initWithDatabase:(FMDatabase *)db {
   if ([super init]) {
-    self.db = sqliteDatabase;
+    db_ = db;
     return self;
   }
   return nil;

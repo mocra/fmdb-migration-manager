@@ -12,6 +12,8 @@
 @interface FmdbMigration : NSObject {
   FMDatabase *db_;
 }
++ (id)migration;
+
 - (void)up;
 - (void)down;
 
@@ -20,4 +22,9 @@
 
 - (void)createTable:(NSString *)tableName;
 - (void)dropTable:(NSString *)tableName;
+
+// This init method exists for the purposes of unit testing.
+// Production code should never call this method, instead instantiate
+// your subclasses with +migration method.
+- (id)initWithDatabase:(FMDatabase *)db;
 @end

@@ -2,6 +2,7 @@ require "test/unit"
 require "osx/cocoa"
 
 $:.unshift File.dirname(__FILE__) + "/../build/bundles"
+$:.unshift File.dirname(__FILE__) + "/migrations"
 
 require "fileutils"
 require "rubygems"
@@ -19,4 +20,3 @@ class Test::Unit::TestCase
     @db.executeQuery "select * from #{table_name}"
   end
 end
-    

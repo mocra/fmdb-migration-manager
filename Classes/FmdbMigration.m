@@ -11,6 +11,10 @@
 
 @implementation FmdbMigration
 
++ (id)migration {
+  return [[[self alloc] init] autorelease];
+}
+
 #pragma mark -
 #pragma mark up/down methods
 
@@ -22,14 +26,14 @@
   NSLog([NSString stringWithFormat:@"%s: -up method not implemented", [self className]]);
 }
 
-// - (void)upWithDatabase:(FMDatabase *)db {
-//   db_ = db;
-//   [self up];
-// }
-// - (void)downWithDatabase:(FMDatabase *)db {
-//   db_ = db;
-//   [self down];
-// }
+- (void)upWithDatabase:(FMDatabase *)db {
+  db_ = db;
+  [self up];
+}
+- (void)downWithDatabase:(FMDatabase *)db {
+  db_ = db;
+  [self down];
+}
 
 #pragma mark -
 #pragma mark Helper methods for manipulating database schema
@@ -44,5 +48,16 @@
   [db_ executeUpdate:sql];
 }
 
+
+#pragma mark -
+#pragma mark Unit testing helpers
+
+- (id)initWithDatabase:(FMDatabase *)db {
+  if ([super init]) {
+    db_ = db;
+    return self;
+  }
+  return nil;
+}
 
 @end
