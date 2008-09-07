@@ -8,6 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import "FMDatabase.h"
+#import "FmdbMigrationColumn.h"
 
 @interface FmdbMigration : NSObject {
   FMDatabase *db_;
@@ -25,6 +26,8 @@
 - (void)createTable:(NSString *)tableName;
 - (void)createTable:(NSString *)tableName withColumns:(NSArray *)columns;
 - (void)dropTable:(NSString *)tableName;
+
+- (void)addColumn:(FmdbMigrationColumn *)column forTableName:(NSString *)tableName;
 
 // This init method exists for the purposes of unit testing.
 // Production code should never call this method, instead instantiate

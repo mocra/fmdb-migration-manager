@@ -101,15 +101,15 @@ class TestFmdbMigration < Test::Unit::TestCase
         end
         
         should "have default column 'id'" do
-          assert_equal(0, @results.columnIndexForName("id"))
+          assert_not_equal(-1, @results.columnIndexForName("id"))
         end
       
         should "have default column 'first_name'" do
-          assert_equal(1, @results.columnIndexForName("first_name"))
+          assert_not_equal(-1, @results.columnIndexForName("first_name"))
         end
       
         should "have default column 'age'" do
-          assert_equal(2, @results.columnIndexForName("age"))
+          assert_not_equal(-1, @results.columnIndexForName("age"))
         end
       end
 
