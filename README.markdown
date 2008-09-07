@@ -12,6 +12,13 @@ If the user downloads a new version of your application, which includes one or m
 those migrations will be automatically executed when they launch the application. Thus again,
 their database schema corresponds with the current version of the application.
 
+## Current status
+
+This project was written on the weekend of Sept 6-7, 2008. In the coming days it will be integrated into an 
+existing project to confirm that the code works and the API is nice.
+
+Nonetheless, the tests do pass and I'd be interested in any feedback on the API, etc.
+
 ## Installation
 
 This project provides some drop-in files to provide versioned schema migrations for
