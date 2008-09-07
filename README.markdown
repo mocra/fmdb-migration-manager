@@ -31,12 +31,13 @@ yet.
 
 Here is the basic idea for what migrations will look like, and how to order them:
 
-    self.migrations = [NSArray arrayWithObjects:
+    NSArray *migrations = [NSArray arrayWithObjects:
         [CreateStudents migration], // 1
         [CreateStaffMembers migration], // 2
         [AddStudentNumberToStudents migration], // 3
-      nil
+        nil
       ];
+    [FmdbMigrationManager executeWithDatabase:db withMigrations:migrations];
 
 Note, the `+migration` method is equivalent to `[[[CreateStudents alloc] init] autorelease]` just much shorter. 
 
