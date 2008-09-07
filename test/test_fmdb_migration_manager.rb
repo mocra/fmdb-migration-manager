@@ -45,7 +45,7 @@ class TestFmdbMigrationManager < Test::Unit::TestCase
       should_have_table "accounts"
       should_have_table "transactions" do
         should_have_column "amount"
-        should_not_have_column "datestamp"
+        should_not_have_column "timestamp"
       end
       
       context "and rerun with another migration" do
@@ -57,7 +57,7 @@ class TestFmdbMigrationManager < Test::Unit::TestCase
         should_have_table "accounts"
         should_have_table "transactions" do
           should_have_column "amount"
-          should_have_column "Timestamp"
+          should_have_column "timestamp"
         end
       end
       

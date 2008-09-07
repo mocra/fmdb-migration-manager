@@ -7,29 +7,21 @@ as you'd need when you release new versions of an application.
 This project provides some drop-in files to provide versioned schema migrations for
 your Objective-C (iPhone/Cocoa) applications.
 
-## Status
+## Installation
 
-Pre-alpha - I've just started. The critical aspect of this project is that it has a Ruby-based test suite.
-
-For tests, see `test/test_*.rb` files.
-
-To build and run tests, run `rake`. If you have autotest installed, run `autotest` to build and run tests automatically with file changes.
+Copy the files in `Classes/` into your Xcode project. You will also need the FMDB source files. There is copy of them in the `fmdb/` folder, though it is recommended to download the [latest version directly](http://gusmueller.com/blog/archives/2008/06/new_home_for_fmdb.html).
 
 ## Usage
 
 The follow is not the target API, just a sample of what currently works. There is no versioning or anything useful
 yet.
 
+First connected to your SQLite database:
+
     FMDatabase* db = [FMDatabase databaseWithPath:@"/tmp/tmp.db"];
     [db open];
   
-    FmdbMigrationManager* migrationManager = [[FmdbMigrationManager alloc] initWithDatabase:db];
-  
-    [migrationManager createTable:@"people"];
-    
-### Using migrations
-
-Here is the basic idea for what migrations will look like, and how to order them:
+Then send all your migration subclasses to the manager, which will determine which need to be executed:
 
     NSArray *migrations = [NSArray arrayWithObjects:
         [CreateStudents migration], // 1
@@ -65,6 +57,9 @@ Internally, if a migration object needs to have its `-up` method invoked, the au
 will actually call `-upWithDatabase:(FMDatabase *)db`, which in turn calls `-up`. Similarly
 for `-down`.
 
+NOTE: currently the `-down` method is optional as the current alpha version of this project doesn't support reversing 
+the migrations. It may be supported in future if there is a use case.
+
 ### FmdbMigrationManager
 
 This class has a list of individual micro-changes to the database schema called *migrations*, represented
@@ -81,12 +76,51 @@ this table.
 
 This project has a suite of tests written in Ruby, although the library is in Objective-C.
 
-### Install dependencies
+Install the dependencies:
 
     sudo gem install Shoulda
 
+Run the tests:
+
+    rake
+
+If you want to continuously run the tests whilst writing code + tests, use the `autotest` tool:
+
+    sudo gem install ZenTest
+    autotest
+
 ## Author
 
-Dr Nic Williams, [drnicwilliams@gmail.com](mailto:&#x64;&#x72;&#x6E;&#x69;&#x63;&#x77;&#x69;&#x6C;&#x6C;&#x69;&#x61;&#x6D;&#x73;&#x40;&#x67;&#x6D;&#x61;&#x69;&#x6C;&#x2E;&#x63;&#x6F;&#x6D;), [http://drnicwilliams.com](http://drnicwilliams.com)
+Dr Nic Williams 
 
-CEO, [Mocra](http://www.mocra.com/) - the premier iPhone/Rails consultancy
+* [drnicwilliams@gmail.com](mailto:&#x64;&#x72;&#x6E;&#x69;&#x63;&#x77;&#x69;&#x6C;&#x6C;&#x69;&#x61;&#x6D;&#x73;&#x40;&#x67;&#x6D;&#x61;&#x69;&#x6C;&#x2E;&#x63;&#x6F;&#x6D;)
+* [http://drnicwilliams.com](http://drnicwilliams.com)
+* CEO, [Mocra](http://www.mocra.com/) - the premier iPhone/Rails consultancy
+
+## Thanks
+
+Thanks to [Gus Mueller](http://gusmueller.com/) for writing [FMDB](http://gusmueller.com/blog/archives/2008/06/new_home_for_fmdb.html). A version of it is included in this project
+to allow the tests to be executed, and it is a dependency of this project.
+
+## License
+
+Copyright (c) 2008 Dr Nic Williams
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
