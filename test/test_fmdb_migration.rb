@@ -110,7 +110,9 @@ class TestFmdbMigration < Test::Unit::TestCase
           should_have_column 'id'
           should_have_column 'title'
           should_have_column 'price'
+          should_not_have_column 'age'
         end
+        
       end
 
     end

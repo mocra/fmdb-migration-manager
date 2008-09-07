@@ -32,7 +32,15 @@ class Test::Unit::TestCase
     should "have column '#{column_name}' on table '#{table_name}'" do
       @results = find_all table_name
       assert_no_errors(@db)
-      assert_not_equal(-1, @results.columnIndexForName("id"))
+      assert_not_equal(-1, @results.columnIndexForName(column_name))
+      @results.close
+    end
+  end
+  
+  def self.should_not_have_column(column_name, table_name = @current_table_name)
+    should "not have column '#{column_name}' on table '#{table_name}'" do
+      @results = find_all table_name
+      assert(!@results.columnNameToIndexMap[column_name])
       @results.close
     end
   end
@@ -43,6 +51,10 @@ class Test::Unit::TestCase
   
   def assert_no_errors(db)
     assert(!db.hadError?, "Last error (#{db.lastErrorCode}): #{db.lastErrorMessage}")
+  end
+
+  def assert_some_errors(db)
+    assert(db.hadError?)
   end
 end
 
