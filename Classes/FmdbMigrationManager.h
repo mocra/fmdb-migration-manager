@@ -11,15 +11,16 @@
 
 @interface FmdbMigrationManager : NSObject {
   FMDatabase *db_;
+  NSArray *migrations_;
   int currentVersion_;
 }
 @property (retain) FMDatabase *db;
+@property (retain) NSArray *migrations;
 @property (assign) int currentVersion;
 
-+ (id)executeForDatabase:(FMDatabase *)db;
++ (id)executeForDatabase:(FMDatabase *)db withMigrations:(NSArray *)migrations;
 
 - (id)initWithDatabase:(FMDatabase *)db;
-
 - (void)executeMigrations;
 - (int)currentVersion;
 
@@ -28,4 +29,5 @@
 
 - (void)initializeSchemaMigrationsTable;
 - (NSString *)schemaMigrationsTableName;
+- (void)performMigrations;
 @end

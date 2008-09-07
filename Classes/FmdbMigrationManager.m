@@ -13,16 +13,18 @@
 
 @implementation FmdbMigrationManager
 
-@synthesize db=db_, currentVersion=currentVersion_;
+@synthesize db=db_, currentVersion=currentVersion_, migrations=migrations_;
 
-+ (id)executeForDatabase:(FMDatabase *)db {
++ (id)executeForDatabase:(FMDatabase *)db withMigrations:(NSArray *)migrations {
   FmdbMigrationManager *manager = [[[self alloc] initWithDatabase:db] autorelease];
+  manager.migrations = migrations;
   [manager executeMigrations];
   return manager;
 }
 
 - (void)executeMigrations {
   [self initializeSchemaMigrationsTable];
+  [self performMigrations];
 }
 
 #pragma mark -
@@ -31,7 +33,7 @@
 - (void)initializeSchemaMigrationsTable {
   // create schema_info table if doesn't already exist
   NSString *tableName = [self schemaMigrationsTableName];
-  NSString *sql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (version INTEGER)", tableName];
+  NSString *sql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (version INTEGER unique default 0)", tableName];
   [db_ executeUpdate:sql];
   // TODO: add index on version column 'unique_schema_migrations'
 
@@ -50,6 +52,14 @@
   return @"schema_info";
 }
 
+- (void)performMigrations {
+  int i;
+  for(i = self.currentVersion; i < [self.migrations count]; ++i)
+  {
+    FmdbMigration *migration = [self.migrations objectAtIndex:i];
+    [migration upWithDatabase:self.db];
+  }
+}
 
 - (id)initWithDatabase:(FMDatabase *)db {
   if ([super init]) {

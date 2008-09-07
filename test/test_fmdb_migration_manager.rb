@@ -1,8 +1,5 @@
 require File.dirname(__FILE__) + '/test_helper'
 
-require "FmdbMigrationManager.bundle"
-OSX::ns_import :FmdbMigrationManager
-
 class TestFmdbMigrationManager < Test::Unit::TestCase
   include OSX
   
@@ -14,7 +11,7 @@ class TestFmdbMigrationManager < Test::Unit::TestCase
     
     context "run zero migrations" do
       setup do
-        @migration_manager = FmdbMigrationManager.executeForDatabase(@db)
+        @migration_manager = FmdbMigrationManager.executeForDatabase_withMigrations(@db, [])
       end
       
       should "have migration manager" do
@@ -31,11 +28,25 @@ class TestFmdbMigrationManager < Test::Unit::TestCase
       end
       
       should "still have version 0 if migrations run again" do
-        FmdbMigrationManager.executeForDatabase(@db)
+        FmdbMigrationManager.executeForDatabase_withMigrations(@db, [])
         assert_equal(0, @migration_manager.currentVersion)
       end
     end
-    
+
+    context "run some migrations" do
+      setup do
+        @migration_manager = FmdbMigrationManager.executeForDatabase_withMigrations(@db, [
+            CreateAccounts.migration, 
+            CreateTransactions.migration
+        ])
+      end
+
+      should_have_table "accounts"
+      should_have_table "transactions" do
+        should_have_column "amount"
+      end
+    end
   end
-  
+
+
 end

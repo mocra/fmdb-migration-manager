@@ -1,11 +1,5 @@
 require File.dirname(__FILE__) + '/test_helper'
 
-require "FmdbMigrationManager.bundle"
-OSX::ns_import :FmdbMigrationManager
-
-# load fixture migrations
-require "create_accounts"
-
 class TestFmdbMigration < Test::Unit::TestCase
   include OSX
   

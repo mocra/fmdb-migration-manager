@@ -9,6 +9,13 @@ require "rubygems"
 gem 'Shoulda'
 require "Shoulda"
 
+require "FmdbMigrationManager.bundle"
+OSX::ns_import :FmdbMigrationManager
+
+# load fixture migrations
+require "create_accounts"
+require "create_transactions"
+
 class Test::Unit::TestCase
   def self.should_have_no_errors
     should "have no db errors" do
@@ -24,7 +31,7 @@ class Test::Unit::TestCase
       assert_instance_of(OSX::FMResultSet, @results)
       @results.close
     end
-    yield
+    yield if block_given?
   end
 
   def self.should_have_column(column_name, table_name = @current_table_name)
