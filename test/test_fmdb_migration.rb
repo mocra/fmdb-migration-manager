@@ -79,11 +79,11 @@ class TestFmdbMigration < Test::Unit::TestCase
       
       context "then create table with columns and default values" do
         setup do
-          # [mm createTable:@"students" withColumns:[NSArray arrayWithObjects:
+          # [migration createTable:@"students" withColumns:[NSArray arrayWithObjects:
           #  [FmdbMigrationColumn columnWithColumnName:@"first_name" columnType:@"string"],
           #  [FmdbMigrationColumn columnWithColumnName:@"age" columnType:@"integer" defaultValue:21],
           #  nil];
-          @m1 = @migration.createTable_withColumns("students", [
+          @migration.createTable_withColumns("students", [
             FmdbMigrationColumn.columnWithColumnName_columnType("first_name", "string"),
             FmdbMigrationColumn.columnWithColumnName_columnType_defaultValue("age", "string", 21)
           ])
@@ -93,6 +93,23 @@ class TestFmdbMigration < Test::Unit::TestCase
           should_have_column 'id'
           should_have_column 'first_name'
           should_have_column 'age'
+        end
+      end
+      
+      context "then create table and then columns afterwards" do
+        setup do
+          # [migration createTable:@"students"];
+          # [migration addColumn:[FmdbMigrationColumn columnWithColumnName:@"first_name" columnType:@"string"] forTableName:@"students"];
+          # [migration addColumn:[FmdbMigrationColumn columnWithColumnName:@"age" columnType:@"integer" defaultValue:21] forTableName:@"students"];
+          @migration.createTable("books")
+          @migration.addColumn_forTableName(FmdbMigrationColumn.columnWithColumnName_columnType("title", "string"), "books")
+          @migration.addColumn_forTableName(FmdbMigrationColumn.columnWithColumnName_columnType_defaultValue("price", "decimal", 12.50), "books")
+        end
+
+        should_have_table 'books' do
+          should_have_column 'id'
+          should_have_column 'title'
+          should_have_column 'price'
         end
       end
 
