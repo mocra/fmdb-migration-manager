@@ -48,7 +48,7 @@
 }
 
 - (void)createTable:(NSString *)tableName {
-  NSString *sql = [NSString stringWithFormat:@"CREATE TABLE %@ (id integer primary key autoincrement)", tableName];
+  NSString *sql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (id integer primary key autoincrement)", tableName];
   [db_ executeUpdate:sql];
 }
 

@@ -9,16 +9,12 @@ class TestFmdbMigrationManager < Test::Unit::TestCase
   context "with clean sqlite db" do
     setup_db
     teardown_db
-
-    should "create sqlite db" do
-      assert File.exists?(@db_path)
-    end
-    
     should_have_no_errors
+    should "create sqlite db" do assert File.exists?(@db_path) end
     
-    context "prepare for migrations" do
+    context "run zero migrations" do
       setup do
-        @migration_manager = FmdbMigrationManager.alloc.initWithDatabase(@db)
+        @migration_manager = FmdbMigrationManager.executeForDatabase(@db)
       end
       
       should "have migration manager" do
@@ -26,6 +22,13 @@ class TestFmdbMigrationManager < Test::Unit::TestCase
         assert_instance_of(OSX::FmdbMigrationManager, @migration_manager)
       end
 
+      should_have_table "schema_info" do
+        should_have_column "version"
+      end
+      
+      should "have current version 0" do
+        assert_equal(0, @migration_manager.currentVersion)
+      end
     end
     
   end

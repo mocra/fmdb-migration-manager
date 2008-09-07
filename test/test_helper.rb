@@ -22,7 +22,6 @@ class Test::Unit::TestCase
       @results = find_all table_name
       assert_no_errors(@db)
       assert_instance_of(OSX::FMResultSet, @results)
-      assert(!@results.next?, "Should be no results")
       @results.close
     end
     yield
@@ -63,6 +62,7 @@ class Thoughtbot::Shoulda::Context
     setup do
       @db_path = "/tmp/fmdb-test.db"
       @db = OSX::FMDatabase.databaseWithPath @db_path
+      # @db.setTraceExecution true
       @db.open
     end
   end

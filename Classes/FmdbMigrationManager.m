@@ -7,11 +7,50 @@
 //
 
 #import "FmdbMigrationManager.h"
-
+#import "FmdbMigration.h"
+#import "FmdbMigrationColumn.h"
+#import "FMResultSet.h"
 
 @implementation FmdbMigrationManager
 
-@synthesize db=db_;
+@synthesize db=db_, currentVersion=currentVersion_;
+
++ (id)executeForDatabase:(FMDatabase *)db {
+  FmdbMigrationManager *manager = [[[self alloc] initWithDatabase:db] autorelease];
+  [manager executeMigrations];
+  return manager;
+}
+
+- (void)executeMigrations {
+  [self initializeSchemaMigrationsTable];
+}
+
+#pragma mark -
+#pragma mark Internal methods
+
+- (void)initializeSchemaMigrationsTable {
+  // create schema_info table if doesn't already exist
+  NSString *tableName = [self schemaMigrationsTableName];
+  NSString *sql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (version INTEGER)", tableName];
+  [db_ executeUpdate:sql];
+  // TODO: add index on version column 'unique_schema_migrations'
+
+  FMResultSet *rs = [db_ executeQuery:[NSString stringWithFormat:@"SELECT * FROM %@", tableName]];
+  if([rs next]) {
+    currentVersion_ = [rs intForColumn:@"version"];
+    NSLog(@"%s %@", _cmd, currentVersion_);
+    [rs close];
+  } else {
+    currentVersion_ = 0;
+    [rs close];
+    [self.db executeUpdate:[NSString stringWithFormat:@"INSERT INTO %@ DEFAULT VALUES", tableName]];
+  }
+}
+
+- (NSString *)schemaMigrationsTableName {
+  return @"schema_info";
+}
+
 
 - (id)initWithDatabase:(FMDatabase *)db {
   if ([super init]) {
