@@ -20,11 +20,13 @@
 #pragma mark up/down methods
 
 - (void)up {
-  NSLog([NSString stringWithFormat:@"%s: -up method not implemented", [self className]]);
+  NSString *reason = [NSString stringWithFormat:@"%s: -up method not implemented", [self className]];
+  @throw [NSException exceptionWithName:@"MigrationMethodMissing" reason:reason userInfo:nil];
 }
 
 - (void)down {
-  NSLog([NSString stringWithFormat:@"%s: -up method not implemented", [self className]]);
+  NSString *reason = [NSString stringWithFormat:@"%s: -down method not implemented", [self className]];
+  @throw [NSException exceptionWithName:@"MigrationMethodMissing" reason:reason userInfo:nil];
 }
 
 - (void)upWithDatabase:(FMDatabase *)db {
