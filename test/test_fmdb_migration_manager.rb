@@ -29,6 +29,11 @@ class TestFmdbMigrationManager < Test::Unit::TestCase
       should "have current version 0" do
         assert_equal(0, @migration_manager.currentVersion)
       end
+      
+      should "still have version 0 if migrations run again" do
+        FmdbMigrationManager.executeForDatabase(@db)
+        assert_equal(0, @migration_manager.currentVersion)
+      end
     end
     
   end

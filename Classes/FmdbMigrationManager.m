@@ -38,7 +38,6 @@
   FMResultSet *rs = [db_ executeQuery:[NSString stringWithFormat:@"SELECT * FROM %@", tableName]];
   if([rs next]) {
     currentVersion_ = [rs intForColumn:@"version"];
-    NSLog(@"%s %@", _cmd, currentVersion_);
     [rs close];
   } else {
     currentVersion_ = 0;
