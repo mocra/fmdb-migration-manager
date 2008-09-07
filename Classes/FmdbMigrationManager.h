@@ -12,17 +12,18 @@
 @interface FmdbMigrationManager : NSObject {
   FMDatabase *db_;
   NSArray *migrations_;
-  int currentVersion_;
+  NSInteger currentVersion_;
 }
 @property (retain) FMDatabase *db;
 @property (retain) NSArray *migrations;
-@property (assign) int currentVersion;
+#warning recommanded to use NSInteger over int (if one day moving code to 64bits)
+@property NSInteger currentVersion;
 
 + (id)executeForDatabase:(FMDatabase *)db withMigrations:(NSArray *)migrations;
 
 - (id)initWithDatabase:(FMDatabase *)db;
 - (void)executeMigrations;
-- (int)currentVersion;
+- (NSInteger)currentVersion;
 
 #pragma mark -
 #pragma mark Internal methods

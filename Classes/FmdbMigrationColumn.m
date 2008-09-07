@@ -48,4 +48,12 @@
   return self.columnType;
 }
 
+- (void)dealloc {
+	[columnName_ release];
+	[columnType_ release];
+	[defaultValue_ release];
+	
+	[super dealloc];
+}
+
 @end

@@ -16,65 +16,63 @@
 @synthesize db=db_, currentVersion=currentVersion_, migrations=migrations_;
 
 + (id)executeForDatabase:(FMDatabase *)db withMigrations:(NSArray *)migrations {
-  FmdbMigrationManager *manager = [[[self alloc] initWithDatabase:db] autorelease];
-  manager.migrations = migrations;
-  [manager executeMigrations];
-  return manager;
+	FmdbMigrationManager *manager = [[[self alloc] initWithDatabase:db] autorelease];
+	manager.migrations = migrations;
+	[manager executeMigrations];
+	return manager;
 }
 
 - (void)executeMigrations {
-  [self initializeSchemaMigrationsTable];
-  [self performMigrations];
+	[self initializeSchemaMigrationsTable];
+	[self performMigrations];
 }
 
 #pragma mark -
 #pragma mark Internal methods
 
 - (void)initializeSchemaMigrationsTable {
-  // create schema_info table if doesn't already exist
-  NSString *tableName = [self schemaMigrationsTableName];
-  NSString *sql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (version INTEGER unique default 0)", tableName];
-  [db_ executeUpdate:sql];
-  // TODO: add index on version column 'unique_schema_migrations'
-
-  FMResultSet *rs = [db_ executeQuery:[NSString stringWithFormat:@"SELECT * FROM %@", tableName]];
-  if([rs next]) {
-    currentVersion_ = [rs intForColumn:@"version"];
-    [rs close];
-  } else {
-    currentVersion_ = 0;
-    [rs close];
-    [self.db executeUpdate:[NSString stringWithFormat:@"INSERT INTO %@ DEFAULT VALUES", tableName]];
-  }
+	// create schema_info table if doesn't already exist
+	NSString *tableName = [self schemaMigrationsTableName];
+	NSString *sql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (version INTEGER unique default 0)", tableName];
+	[db_ executeUpdate:sql];
+#warning added index on version column 'unique_schema_migrations' (anthony)
+	[db_ executeUpdate:[NSString stringWithFormat:@"CREATE INDEX version_idx ON %@ (version)", tableName]];
+	
+	FMResultSet *rs = [db_ executeQuery:[NSString stringWithFormat:@"SELECT version FROM %@", tableName]];
+	if([rs next]) {
+		currentVersion_ = [rs intForColumn:@"version"];
+	} else {
+		currentVersion_ = 0;
+		[self.db executeUpdate:[NSString stringWithFormat:@"INSERT INTO %@ DEFAULT VALUES", tableName]];
+	}
+	[rs close];
 }
 
 - (NSString *)schemaMigrationsTableName {
-  return @"schema_info";
+	return @"schema_info";
 }
 
 - (void)performMigrations {
-  int i;
-  for(i = self.currentVersion; i < [self.migrations count]; ++i)
-  {
-    FmdbMigration *migration = [self.migrations objectAtIndex:i];
-    [migration upWithDatabase:self.db];
-  }
+#warning can use objective-c 2.0 for loops when using NSArray
+	for (FmdbMigration *migration in self.migrations) {
+		[migration upWithDatabase:self.db];
+	}
 }
 
 - (id)initWithDatabase:(FMDatabase *)db {
-  if ([super init]) {
-    self.db = db;
-    return self;
-  }
-  return nil;
+	if ([super init]) {
+		self.db = db;
+		return self;
+	}
+	return nil;
 }
 
 - (void)dealloc
 {
- [db_ close];
- [db_ release];
- 
- [super dealloc];
+	[db_ release];
+	[migrations_ release];
+	
+	[super dealloc];
 }
 @end
 

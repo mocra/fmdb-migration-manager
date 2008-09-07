@@ -74,4 +74,11 @@
   return nil;
 }
 
+- (void)dealloc
+{
+	[db_ release];
+	
+	[super dealloc];
+}
+
 @end
