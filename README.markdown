@@ -1,20 +1,30 @@
-# SQLite Migration Manager with FMDB for iPhone and Cocoa
+# SQLite Versioned Migrations for FMDB adapter for iPhone and Cocoa
 
 The only DB for the iPhone is SQLite, and a nice adapter for SQLite is [FMDB](http://gusmueller.com/blog/archives/2008/06/new_home_for_fmdb.html). 
 Unfortunately it does not have an API for managing versioned migrations to the schema, 
-as you'd need when you release new versions of an application.
+which you need when you release new versions of an application to end users.
 
-This project provides some drop-in files to provide versioned schema migrations for
-your Objective-C (iPhone/Cocoa) applications.
+Initially when a user runs their application (read: YOUR application, which includes *FMDB* and 
+*FMDB Migration Manager*), all current migrations are executed. Thus the
+database schema corresponds to the current version of the application.
+
+If the user downloads a new version of your application, which includes one or more migrations,
+those migrations will be automatically executed when they launch the application. Thus again,
+their database schema corresponds with the current version of the application.
 
 ## Installation
+
+This project provides some drop-in files to provide versioned schema migrations for
+your Objective-C (iPhone/Cocoa) applications. Similarly, FMDB is distributed as a set of
+Objective-C files to copy into your application.
 
 Copy the files in `Classes/` into your Xcode project. You will also need the FMDB source files. There is copy of them in the `fmdb/` folder, though it is recommended to download the [latest version directly](http://gusmueller.com/blog/archives/2008/06/new_home_for_fmdb.html).
 
 ## Usage
 
-The follow is not the target API, just a sample of what currently works. There is no versioning or anything useful
-yet.
+When a user starts your application, the following code should be executed one time, 
+before any database activities are performed. This will ensure that any new migrations are
+executed before any database queries/statements can be accidently executed on a stale schema.
 
 First connected to your SQLite database:
 
@@ -33,7 +43,7 @@ Then send all your migration subclasses to the manager, which will determine whi
 
 Note, the `+migration` method is equivalent to `[[[CreateStudents alloc] init] autorelease]` just much shorter. 
 
-Each migration class looks something like:
+Each migration header and class looks something like:
 
     @interface CreateStudents : FmdbMigration
     {
@@ -52,10 +62,14 @@ Each migration class looks something like:
     }
     @end
 
+The header and migration class files can be stored anywhere in your application, as long as they are
+linked in (performed automatically by Xcode). They are referenced, in their appropriate order of execution,
+by the `[FmdbMigrationManager executeWithDatabase:db withMigrations:migrations]` statement
+mentioned earlier. The `migrations` is an `NSArray` of instances of these migration classes. Again, read above
+for an example of preparing this array and calling the `+executeWithDatabase:withMigrations:` method.
 
 Internally, if a migration object needs to have its `-up` method invoked, the automated manager
-will actually call `-upWithDatabase:(FMDatabase *)db`, which in turn calls `-up`. Similarly
-for `-down`.
+will actually call `-upWithDatabase:(FMDatabase *)db`, which in turn calls `-up`. 
 
 NOTE: currently the `-down` method is optional as the current alpha version of this project doesn't support reversing 
 the migrations. It may be supported in future if there is a use case.
@@ -72,11 +86,46 @@ migration status of the target environment. This information is stored in a spec
 which is created and managed by `FmdbMigrationManager`. The user/developer does not need to worry about
 this table.
 
-## Running tests
+### Migration helpers
 
-This project has a suite of tests written in Ruby, although the library is in Objective-C.
+Inside the `-up` (and future purpose `-down`) method, you can execute any Objective-C code: NSLog calss, store values into 
+objects, etc. Mostly, you will execute `CREATE TABLE`, `ALTER TABLE` and `DROP TABLE` SQL requests upon your database.
 
-Install the dependencies:
+You can call any `FMDatabase` queries within the `-up` method.
+
+This project `FMDB Migration Manager` includes some helpers to make schema creation and modification. Here are some 
+self-explanatory examples:
+
+    - (void)up {
+      [self createTable:@"countries"];
+      [self addColumn:[FmdbMigrationColumn columnWithColumnName:@"name" columnType:@"string"] forTableName:@"countries"];
+    }
+    
+Or create the table and its columns in one method call:
+
+    - (void)up {
+      [self createTable:@"students" withColumns:[NSArray arrayWithObjects:
+        [FmdbMigrationColumn columnWithColumnName:@"name"        columnType:@"string"],
+        [FmdbMigrationColumn columnWithColumnName:@"age"         columnType:@"real"],
+        [FmdbMigrationColumn columnWithColumnName:@"description" columnType:@"text"],
+        nil
+      ]];
+    }
+
+Or drop an existing table, all its columns and data:
+
+    [self dropTableName:@"countries"];
+    
+See `FmdbMigration.h` for definition of these methods.
+
+## Running project tests
+
+This project has a suite of tests written in Ruby, even though the library is in Objective-C. It uses the RubyCocoa project
+to bridge between Ruby (for the tests) and Objective-C (for the library). Ruby was used for testing due to its concise
+syntax of the test/unit and Shoulda test suite libraries. You can easily read the test suites to see what behaviour
+is being tested and the expected outcomes.
+
+Install the dependencies (assuming you have Ruby and RubyGems installed, as is true for OS X 10.5 Leopard):
 
     sudo gem install Shoulda
 
@@ -101,6 +150,10 @@ Dr Nic Williams
 
 Thanks to [Gus Mueller](http://gusmueller.com/) for writing [FMDB](http://gusmueller.com/blog/archives/2008/06/new_home_for_fmdb.html). A version of it is included in this project
 to allow the tests to be executed, and it is a dependency of this project.
+
+Thanks to the [Ruby on Rails](http://www.rubyonrails.org/) web framework which introduced the idea and syntax for database
+schema migrations. The implementation of versioned migrations in this project lends heavily from as many syntactical ideas
+as possible. The differences between the Ruby and Objective-C languages were the reason for any API distinctions.
 
 ## License
 
