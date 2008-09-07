@@ -15,6 +15,7 @@ OSX::ns_import :FmdbMigrationManager
 # load fixture migrations
 require "create_accounts"
 require "create_transactions"
+require "add_timestamp_to_transactions"
 
 class Test::Unit::TestCase
   def self.should_have_no_errors
