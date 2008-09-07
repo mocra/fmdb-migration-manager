@@ -87,29 +87,12 @@ class TestFmdbMigration < Test::Unit::TestCase
             FmdbMigrationColumn.columnWithColumnName_columnType("first_name", "string"),
             FmdbMigrationColumn.columnWithColumnName_columnType_defaultValue("age", "string", 21)
           ])
-          @results = find_all "students"
         end
         
-        teardown { @results.close if @results }
-        
-        should_have_no_errors
-      
-        should "have table 'students'" do
-          assert_not_nil(@results)
-          assert_instance_of(OSX::FMResultSet, @results)
-          assert(!@results.next?, "Should be no results")
-        end
-        
-        should "have default column 'id'" do
-          assert_not_equal(-1, @results.columnIndexForName("id"))
-        end
-      
-        should "have default column 'first_name'" do
-          assert_not_equal(-1, @results.columnIndexForName("first_name"))
-        end
-      
-        should "have default column 'age'" do
-          assert_not_equal(-1, @results.columnIndexForName("age"))
+        should_have_table 'students' do
+          should_have_column 'id'
+          should_have_column 'first_name'
+          should_have_column 'age'
         end
       end
 

@@ -12,7 +12,28 @@ require "Shoulda"
 class Test::Unit::TestCase
   def self.should_have_no_errors
     should "have no db errors" do
-      assert(!@db.hadError?, "Last error (#{@db.lastErrorCode}): #{@db.lastErrorMessage}")
+      assert_no_errors(@db)
+    end
+  end
+
+  def self.should_have_table(table_name, &block)
+    @current_table_name = table_name
+    should "have table '#{table_name}'" do
+      @results = find_all table_name
+      assert_no_errors(@db)
+      assert_instance_of(OSX::FMResultSet, @results)
+      assert(!@results.next?, "Should be no results")
+      @results.close
+    end
+    yield
+  end
+
+  def self.should_have_column(column_name, table_name = @current_table_name)
+    should "have column '#{column_name}' on table '#{table_name}'" do
+      @results = find_all table_name
+      assert_no_errors(@db)
+      assert_not_equal(-1, @results.columnIndexForName("id"))
+      @results.close
     end
   end
 
@@ -20,7 +41,9 @@ class Test::Unit::TestCase
     @db.executeQuery "select * from #{table_name}"
   end
   
-  
+  def assert_no_errors(db)
+    assert(!db.hadError?, "Last error (#{db.lastErrorCode}): #{db.lastErrorMessage}")
+  end
 end
 
 class Thoughtbot::Shoulda::Context
