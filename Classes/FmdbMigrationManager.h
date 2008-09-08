@@ -12,11 +12,11 @@
 @interface FmdbMigrationManager : NSObject {
 	FMDatabase *db_;
 	NSArray *migrations_;
-	int currentVersion_;
+	NSInteger currentVersion_;
 }
 @property (retain) FMDatabase *db;
 @property (retain) NSArray *migrations;
-@property (assign) int currentVersion;
+@property (assign) NSInteger currentVersion;
 
 + (id)executeForDatabase:(FMDatabase *)db withMigrations:(NSArray *)migrations;
 

@@ -53,7 +53,7 @@
 }
 
 - (void)performMigrations {
-	int i;
+	NSInteger i;
 	for(i = self.currentVersion; i < [self.migrations count]; ++i)
 	{
 		FmdbMigration *migration = [self.migrations objectAtIndex:i];
