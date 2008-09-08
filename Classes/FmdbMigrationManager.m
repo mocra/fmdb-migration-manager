@@ -62,19 +62,19 @@
 }
 
 - (id)initWithDatabase:(FMDatabase *)db {
-  if ([super init]) {
-    self.db = db;
-    return self;
-  }
-  return nil;
+	if ([super init]) {
+		self.db = db;
+		return self;
+	}
+	return nil;
 }
 
 - (void)dealloc
 {
- [db_ close];
- [db_ release];
- 
- [super dealloc];
+	[db_ release];
+	[migrations_ release];
+	
+	[super dealloc];
 }
 @end
 

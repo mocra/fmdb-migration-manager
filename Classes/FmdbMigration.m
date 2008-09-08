@@ -28,11 +28,11 @@
 }
 
 - (void)upWithDatabase:(FMDatabase *)db {
-  db_ = db;
+  self.db = db;
   [self up];
 }
 - (void)downWithDatabase:(FMDatabase *)db {
-  db_ = db;
+  self.db = db;
   [self down];
 }
 
@@ -73,5 +73,13 @@
   }
   return nil;
 }
+
+- (void)dealloc
+{
+	[db_ release];
+
+	[super dealloc];
+}
+
 
 @end
