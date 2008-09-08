@@ -39,7 +39,6 @@
 	NSString *tableName = [self schemaMigrationsTableName];
 	NSString *sql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (version INTEGER unique default 0)", tableName];
 	[db_ executeUpdate:sql];
-#warning added index on version column 'unique_schema_migrations' (anthony)
 	[db_ executeUpdate:[NSString stringWithFormat:@"CREATE INDEX version_idx ON %@ (version)", tableName]];
 	
 	[self currentVersion]; // generates first version or stores version in currentVersion_
@@ -51,6 +50,8 @@
 
 - (void)performMigrations {
 	NSInteger i;
+	// Currently only 'up' migrations
+#warning If currentVersion > 0, its likely its repeating a migration
 	for (i = self.currentVersion; i < [self.migrations count]; i++) {
 		FmdbMigration *migration = [self.migrations objectAtIndex:i];
 		[migration upWithDatabase:self.db];
