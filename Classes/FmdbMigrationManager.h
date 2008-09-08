@@ -16,7 +16,7 @@
 }
 @property (retain) FMDatabase *db;
 @property (retain) NSArray *migrations;
-@property (assign) NSInteger currentVersion;
+@property (assign,readonly) NSInteger currentVersion;
 
 + (id)executeForDatabase:(FMDatabase *)db withMigrations:(NSArray *)migrations;
 
@@ -30,4 +30,5 @@
 - (void)initializeSchemaMigrationsTable;
 - (NSString *)schemaMigrationsTableName;
 - (void)performMigrations;
+- (void)recordVersionStateAfterMigrating:(NSInteger)version;
 @end

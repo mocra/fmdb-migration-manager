@@ -11,9 +11,13 @@
 #import "FmdbMigrationColumn.h"
 #import "FMResultSet.h"
 
+#ifndef INVALID_VERSION_NUMBER
+#define INVALID_VERSION_NUMBER -1
+#endif
+
 @implementation FmdbMigrationManager
 
-@synthesize db=db_, currentVersion=currentVersion_, migrations=migrations_;
+@synthesize db=db_, migrations=migrations_;
 
 + (id)executeForDatabase:(FMDatabase *)db withMigrations:(NSArray *)migrations {
 	FmdbMigrationManager *manager = [[[self alloc] initWithDatabase:db] autorelease];
@@ -37,19 +41,7 @@
 	[db_ executeUpdate:sql];
 	// TODO: add index on version column 'unique_schema_migrations'
 	
-	FMResultSet *rs = [db_ executeQuery:[NSString stringWithFormat:@"SELECT * FROM %@", tableName]];
-	if([rs next]) {
-		currentVersion_ = [rs intForColumn:@"version"];
-		[rs close];
-	} else {
-		currentVersion_ = 0;
-		[rs close];
-		[self.db executeUpdate:[NSString stringWithFormat:@"INSERT INTO %@ DEFAULT VALUES", tableName]];
-	}
-}
-
-- (NSString *)schemaMigrationsTableName {
-	return @"schema_info";
+	[self currentVersion]; // generates first version or stores version in currentVersion_
 }
 
 - (void)performMigrations {
@@ -58,12 +50,46 @@
 	{
 		FmdbMigration *migration = [self.migrations objectAtIndex:i];
 		[migration upWithDatabase:self.db];
+		[self recordVersionStateAfterMigrating:i + 1];
+		currentVersion_ = i + 1;
 	}
+}
+
+- (NSInteger)currentVersion
+{
+	if(currentVersion_ == INVALID_VERSION_NUMBER)	{
+		NSString *tableName = [self schemaMigrationsTableName];
+		FMResultSet *rs = [db_ executeQuery:[NSString stringWithFormat:@"SELECT version FROM %@ ORDER BY version DESC", tableName]];
+		if([rs next]) {
+			currentVersion_ = [rs intForColumn:@"version"];
+		} else {
+			currentVersion_ = 0;
+			[db_ executeUpdate:[NSString stringWithFormat:@"INSERT INTO %@ (version) VALUES (0)", tableName]];
+		}
+		[rs close];
+	}
+	return currentVersion_;
+}
+
+- (void)recordVersionStateAfterMigrating:(NSInteger)version {
+	NSString *tableName = [self schemaMigrationsTableName];
+	if (version < self.currentVersion) {
+		[db_ executeUpdate:[NSString stringWithFormat:@"DELETE FROM %@ WHERE version = ?", tableName],
+							[NSNumber numberWithInteger:version]];
+	} else if (version > self.currentVersion) {
+		[db_ executeUpdate:[NSString stringWithFormat:@"INSERT INTO %@ (version) VALUES (?)", tableName],
+							[NSNumber numberWithInteger:version]];
+	}
+}
+
+- (NSString *)schemaMigrationsTableName {
+	return @"schema_info";
 }
 
 - (id)initWithDatabase:(FMDatabase *)db {
 	if ([super init]) {
 		self.db = db;
+		currentVersion_ = INVALID_VERSION_NUMBER;
 		return self;
 	}
 	return nil;

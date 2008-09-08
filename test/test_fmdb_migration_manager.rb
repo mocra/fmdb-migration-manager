@@ -41,6 +41,8 @@ class TestFmdbMigrationManager < Test::Unit::TestCase
         ]
         @migration_manager = FmdbMigrationManager.executeForDatabase_withMigrations(@db, @migrations)
       end
+      
+      teardown { @results.close if @results }
 
       should_have_table "accounts"
       should_have_table "transactions" do
@@ -48,6 +50,16 @@ class TestFmdbMigrationManager < Test::Unit::TestCase
         should_not_have_column "timestamp"
       end
       
+      should "have version 2" do
+        assert_equal(2, @migration_manager.currentVersion)
+      end
+      
+      should "have version 2 has largest schema_info version number" do
+        @results = @db.executeQuery("select version from schema_info order by version desc")
+        flunk "no schema_info rows (error: #{@db.lastErrorMessage})" unless @results.next?
+        assert_equal(2, @results.intForColumn("version"))
+      end
+
       context "and rerun with another migration" do
         setup do
           @migrations << AddTimestampToTransactions.migration
@@ -58,6 +70,16 @@ class TestFmdbMigrationManager < Test::Unit::TestCase
         should_have_table "transactions" do
           should_have_column "amount"
           should_have_column "timestamp"
+        end
+        
+        should "have version 3" do
+          assert_equal(3, @migration_manager.currentVersion)
+        end
+        
+        should "have version 3 has largest schema_info version number" do
+          @results = @db.executeQuery("select version from schema_info order by version desc")
+          flunk "no schema_info rows (error: #{@db.lastErrorMessage})" unless @results.next?
+          assert_equal(3, @results.intForColumn("version"))
         end
       end
       
