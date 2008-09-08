@@ -16,8 +16,7 @@
 }
 @property (retain) FMDatabase *db;
 @property (retain) NSArray *migrations;
-#warning recommanded to use NSInteger over int (if one day moving code to 64bits)
-@property NSInteger currentVersion;
+@property (readonly) NSInteger currentVersion;
 
 + (id)executeForDatabase:(FMDatabase *)db withMigrations:(NSArray *)migrations;
 
@@ -31,4 +30,5 @@
 - (void)initializeSchemaMigrationsTable;
 - (NSString *)schemaMigrationsTableName;
 - (void)performMigrations;
+- (void)recordVersionStateAfterMigrating:(NSInteger)version;
 @end
