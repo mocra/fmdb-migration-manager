@@ -10,9 +10,9 @@
 
 
 @interface FmdbMigrationColumn : NSObject {
-  NSString *columnName_;
-  NSString *columnType_;
-  id defaultValue_;
+	NSString *columnName_;
+	NSString *columnType_;
+	id defaultValue_;
 }
 @property (retain) NSString *columnName;
 @property (retain) NSString *columnType;
@@ -23,7 +23,7 @@
 + (FmdbMigrationColumn*)columnWithColumnName:(NSString*)columnName
                                   columnType:(NSString*)columnType
                                 defaultValue:(id)defaultValue;
-                                
+
 // Used for sql queries "ALTER TABLE table_name ADD COLUMN [column sqlDefinition]"
 - (NSString *)sqlDefinition;
 

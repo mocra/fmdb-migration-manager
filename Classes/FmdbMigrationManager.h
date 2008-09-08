@@ -10,9 +10,9 @@
 #import "FMDatabase.h"
 
 @interface FmdbMigrationManager : NSObject {
-  FMDatabase *db_;
-  NSArray *migrations_;
-  int currentVersion_;
+	FMDatabase *db_;
+	NSArray *migrations_;
+	int currentVersion_;
 }
 @property (retain) FMDatabase *db;
 @property (retain) NSArray *migrations;

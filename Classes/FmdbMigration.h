@@ -11,7 +11,7 @@
 #import "FmdbMigrationColumn.h"
 
 @interface FmdbMigration : NSObject {
-  FMDatabase *db_;
+	FMDatabase *db_;
 }
 @property (retain) FMDatabase *db;
 

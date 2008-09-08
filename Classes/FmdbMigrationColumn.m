@@ -19,19 +19,19 @@
 + (FmdbMigrationColumn*)columnWithColumnName:(NSString*)columnName
                                   columnType:(NSString*)columnType
 {
-  FmdbMigrationColumn* column = [[[FmdbMigrationColumn alloc] init] autorelease];
-  column.columnName = columnName;
-  column.columnType = columnType;
-  return column;
+	FmdbMigrationColumn* column = [[[FmdbMigrationColumn alloc] init] autorelease];
+	column.columnName = columnName;
+	column.columnType = columnType;
+	return column;
 }
 
 + (FmdbMigrationColumn*)columnWithColumnName:(NSString*)columnName
                                   columnType:(NSString*)columnType
                                 defaultValue:(id)defaultValue
 {
-  FmdbMigrationColumn* column = [self columnWithColumnName:columnName columnType:columnType];
-  column.defaultValue = defaultValue;
-  return column;
+	FmdbMigrationColumn* column = [self columnWithColumnName:columnName columnType:columnType];
+	column.defaultValue = defaultValue;
+	return column;
 }
 
 // Notes from http://www.sqlite.org/lang_altertable.html:
@@ -40,12 +40,12 @@
 //  * The column may not have a default value of CURRENT_TIME, CURRENT_DATE or CURRENT_TIMESTAMP.
 //  * If a NOT NULL constraint is specified, then the column must have a default value other than NULL.
 - (NSString *)sqlDefinition {
-  NSString *sql = [NSString stringWithFormat:@"%@ %@", self.columnName, self.columnTypeDefinition];
-  return sql;
+	NSString *sql = [NSString stringWithFormat:@"%@ %@", self.columnName, self.columnTypeDefinition];
+	return sql;
 }
 
 - (NSString *)columnTypeDefinition {
-  return self.columnType;
+	return self.columnType;
 }
 
 - (void)dealloc {
