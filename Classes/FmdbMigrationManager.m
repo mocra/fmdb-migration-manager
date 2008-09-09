@@ -59,8 +59,7 @@
 - (void)performMigrations
 {
 	NSInteger i;
-	for(i = self.currentVersion; i < [self.migrations count]; ++i)
-	{
+	for(i = self.currentVersion; i < [self.migrations count]; ++i) {
 		FmdbMigration *migration = [self.migrations objectAtIndex:i];
 		[migration upWithDatabase:self.db];
 		[self recordVersionStateAfterMigrating:i + 1];
@@ -75,16 +74,14 @@
 	aVersion = (aVersion>self.migrations.count)?self.migrations.count:aVersion;
 
 	if (aVersion < self.currentVersion) {
-		for(i = self.currentVersion; i > aVersion; --i)
-		{
+		for(i = self.currentVersion; i > aVersion; --i) {
 			FmdbMigration *migration = [self.migrations objectAtIndex:i - 1];
 			[migration downWithDatabase:self.db];
 			[self recordVersionStateAfterMigrating:i - 1];
 			currentVersion_ = i - 1;
 		}
 	} else {
-		for(i = self.currentVersion; i < aVersion; ++i)
-		{
+		for(i = self.currentVersion; i < aVersion; ++i) {
 			FmdbMigration *migration = [self.migrations objectAtIndex:i];
 			[migration upWithDatabase:self.db];
 			[self recordVersionStateAfterMigrating:i + 1];
@@ -121,7 +118,7 @@
 		[self initializeSchemaMigrationsTable];
 
 		currentVersion_ = [db_ intForQuery:[NSString stringWithFormat:@"SELECT version FROM %@", self.schemaMigrationsTableName]];
-		if(currentVersion_ == 0)	{
+		if(currentVersion_ == 0) {
 			NSInteger anyRows = [db_ intForQuery:[NSString stringWithFormat:@"SELECT count(version) FROM %@", self.schemaMigrationsTableName]];
 			if (anyRows == 0) {
 				[db_ executeUpdate:[NSString stringWithFormat:@"INSERT INTO %@ (version) VALUES (0)", self.schemaMigrationsTableName]];

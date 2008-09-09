@@ -19,19 +19,23 @@
 #pragma mark -
 #pragma mark up/down methods
 
-- (void)up {
+- (void)up 
+{
 	NSLog([NSString stringWithFormat:@"%s: -up method not implemented", [self className]]);
 }
 
-- (void)down {
+- (void)down 
+{
 	NSLog([NSString stringWithFormat:@"%s: -down method not implemented", [self className]]);
 }
 
-- (void)upWithDatabase:(FMDatabase *)db {
+- (void)upWithDatabase:(FMDatabase *)db 
+{
 	self.db = db;
 	[self up];
 }
-- (void)downWithDatabase:(FMDatabase *)db {
+- (void)downWithDatabase:(FMDatabase *)db 
+{
 	self.db = db;
 	[self down];
 }
@@ -39,25 +43,28 @@
 #pragma mark -
 #pragma mark Helper methods for manipulating database schema
 
-- (void)createTable:(NSString *)tableName withColumns:(NSArray *)columns {
+- (void)createTable:(NSString *)tableName withColumns:(NSArray *)columns 
+{
 	[self createTable:tableName];
-	for (FmdbMigrationColumn *migrationColumn in columns)
-	{
+	for (FmdbMigrationColumn *migrationColumn in columns) {
 		[self addColumn:migrationColumn forTableName:tableName];
 	}
 }
 
-- (void)createTable:(NSString *)tableName {
+- (void)createTable:(NSString *)tableName 
+{
 	NSString *sql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (id integer primary key autoincrement)", tableName];
 	[db_ executeUpdate:sql];
 }
 
-- (void)dropTable:(NSString *)tableName {
+- (void)dropTable:(NSString *)tableName 
+{
 	NSString *sql = [NSString stringWithFormat:@"DROP TABLE IF EXISTS %@", tableName];
 	[db_ executeUpdate:sql];
 }
 
-- (void)addColumn:(FmdbMigrationColumn *)column forTableName:(NSString *)tableName {
+- (void)addColumn:(FmdbMigrationColumn *)column forTableName:(NSString *)tableName 
+{
 	NSString *sql = [NSString stringWithFormat:@"ALTER TABLE %@ ADD COLUMN %@", tableName, [column sqlDefinition]];
 	[db_ executeUpdate:sql];
 }
@@ -66,7 +73,8 @@
 #pragma mark -
 #pragma mark Unit testing helpers
 
-- (id)initWithDatabase:(FMDatabase *)db {
+- (id)initWithDatabase:(FMDatabase *)db 
+{
 	if ([super init]) {
 		self.db = db;
 		return self;

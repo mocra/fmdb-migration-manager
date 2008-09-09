@@ -39,20 +39,23 @@
 //  * The column may not have a PRIMARY KEY or UNIQUE constraint.
 //  * The column may not have a default value of CURRENT_TIME, CURRENT_DATE or CURRENT_TIMESTAMP.
 //  * If a NOT NULL constraint is specified, then the column must have a default value other than NULL.
-- (NSString *)sqlDefinition {
+- (NSString *)sqlDefinition
+{
 	NSString *sql = [NSString stringWithFormat:@"%@ %@", self.columnName, self.columnTypeDefinition];
 	return sql;
 }
 
-- (NSString *)columnTypeDefinition {
+- (NSString *)columnTypeDefinition
+{
 	return self.columnType;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
 	[columnName_ release];
 	[columnType_ release];
 	[defaultValue_ release];
-	
+
 	[super dealloc];
 }
 @end
