@@ -35,6 +35,15 @@ class Test::Unit::TestCase
     yield if block_given?
   end
 
+  def self.should_not_have_table(table_name)
+    @current_table_name = table_name
+    should "have not table '#{table_name}'" do
+      @results = find_all table_name
+      assert_some_errors(@db)
+      @results.close if @results
+    end
+  end
+
   def self.should_have_column(column_name, table_name = @current_table_name)
     should "have column '#{column_name}' on table '#{table_name}'" do
       @results = find_all table_name

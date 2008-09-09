@@ -55,7 +55,7 @@ class TestFmdbMigrationManager < Test::Unit::TestCase
         assert_equal(2, @migration_manager.currentVersion)
       end
       
-      should "have version 2 has largest schema_info version number" do
+      should "have version 2 in schema_info" do
         @results = @db.executeQuery("select version from schema_info order by version desc")
         flunk "no schema_info rows (error: #{@db.lastErrorMessage})" unless @results.next?
         assert_equal(2, @results.intForColumn("version"))
@@ -78,11 +78,32 @@ class TestFmdbMigrationManager < Test::Unit::TestCase
           assert_equal(3, @migration_manager.currentVersion)
         end
         
-        should "have version 3 has largest schema_info version number" do
+        should "have version 3 in schema_info" do
           @results = @db.executeQuery("select version from schema_info order by version desc")
           flunk "no schema_info rows (error: #{@db.lastErrorMessage})" unless @results.next?
           assert_equal(3, @results.intForColumn("version"))
         end
+        
+        context "and go down to specific version 1" do
+          setup do
+            @migration_manager = FmdbMigrationManager.executeForDatabasePath_withMigrations_andMatchVersion(@db_path, @migrations, 1)
+          end
+
+          should_have_table "schema_info"
+          should_have_table "accounts"
+          should_not_have_table "transactions"
+
+          should "have version 1" do
+            assert_equal(1, @migration_manager.currentVersion)
+          end
+
+          should "have version 1 in schema_info" do
+            @results = @db.executeQuery("select version from schema_info order by version desc")
+            flunk "no schema_info rows (error: #{@db.lastErrorMessage})" unless @results.next?
+            assert_equal(1, @results.intForColumn("version"))
+          end
+        end
+        
       end
       
     end

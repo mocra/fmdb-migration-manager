@@ -33,12 +33,7 @@ When a user starts your application, the following code should be executed one t
 before any database activities are performed. This will ensure that any new migrations are
 executed before any database queries/statements can be accidently executed on a stale schema.
 
-First connected to your SQLite database:
-
-    FMDatabase* db = [FMDatabase databaseWithPath:@"/tmp/tmp.db"];
-    [db open];
-  
-Then send all your migration subclasses to the manager, which will determine which need to be executed:
+Setup your list of migration subclasses and send them to the manager, which will determine which need to be executed:
 
     NSArray *migrations = [NSArray arrayWithObjects:
         [CreateStudents migration], // 1
@@ -46,7 +41,7 @@ Then send all your migration subclasses to the manager, which will determine whi
         [AddStudentNumberToStudents migration], // 3
         nil
       ];
-    [FmdbMigrationManager executeWithDatabase:db withMigrations:migrations];
+    [FmdbMigrationManager executeForDatabasePath:@"/tmp/tmp.db" withMigrations:migrations];
 
 Note, the `+migration` method is equivalent to `[[[CreateStudents alloc] init] autorelease]` just much shorter. 
 
