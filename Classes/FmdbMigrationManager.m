@@ -11,6 +11,7 @@
 #import "FmdbMigrationColumn.h"
 #import "FMResultSet.h"
 #import "FMDatabase.h"
+#import "FMDatabaseAdditions.h"
 
 @implementation FmdbMigrationManager
 
@@ -32,7 +33,7 @@
 	return manager;
 }
 
-- (void)executeMigrations 
+- (void)executeMigrations
 {
 	[self initializeSchemaMigrationsTable];
 	[self performMigrations];
@@ -47,17 +48,17 @@
 #pragma mark -
 #pragma mark Internal methods
 
-- (void)initializeSchemaMigrationsTable 
+- (void)initializeSchemaMigrationsTable
 {
 	// create schema_info table if doesn't already exist
 	NSString *sql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (version INTEGER unique default 0)", self.schemaMigrationsTableName];
 	[db_ executeUpdate:sql];
 	// TODO: add index on version column 'unique_schema_migrations'
-	
+
 	[self currentVersion]; // generates first version or stores version in currentVersion_
 }
 
-- (void)performMigrations 
+- (void)performMigrations
 {
 	NSInteger i;
 	for(i = self.currentVersion; i < [self.migrations count]; ++i)
@@ -72,9 +73,9 @@
 - (void)performMigrationsAndMatchVersion:(NSInteger)aVersion
 {
 	NSInteger i;
-	
+
 	aVersion = (aVersion>self.migrations.count)?self.migrations.count:aVersion;
-	
+
 	if (aVersion < self.currentVersion) {
 		for(i = self.currentVersion; i > aVersion; --i)
 		{
@@ -99,18 +100,18 @@
 	return [db_ intForQuery:[NSString stringWithFormat:@"SELECT version FROM %@", self.schemaMigrationsTableName]];
 }
 
-- (void)recordVersionStateAfterMigrating:(NSInteger)version 
+- (void)recordVersionStateAfterMigrating:(NSInteger)version
 {
 	[db_ executeUpdate:[NSString stringWithFormat:@"UPDATE %@ SET version = ?", self.schemaMigrationsTableName], [NSNumber numberWithInteger:version]];
 }
 
-- (NSString *)schemaMigrationsTableName 
+- (NSString *)schemaMigrationsTableName
 {
 	schemaMigrationsTableName_ = @"schema_info";
 	return schemaMigrationsTableName_;
 }
 
-- (id)initWithDatabasePath:(NSString *)aPath 
+- (id)initWithDatabasePath:(NSString *)aPath
 {
 	if ([super init]) {
 		self.db = [FMDatabase databaseWithPath:aPath];
@@ -118,8 +119,9 @@
 			NSLog(@"error opening the database for migration");
 			return nil;
 		}
-		
+
 		currentVersion_ = [db_ intForQuery:[NSString stringWithFormat:@"SELECT version FROM %@", self.schemaMigrationsTableName]];
+		NSLog(@"%s %d", _cmd, currentVersion_);
 		if(currentVersion_ == 0)	{
 			[db_ executeUpdate:[NSString stringWithFormat:@"INSERT INTO %@ (version) VALUES (0)", self.schemaMigrationsTableName]];
 		}
@@ -134,7 +136,7 @@
 	[db_ release];
 	[migrations_ release];
 	[schemaMigrationsTableName_ release];
-	
+
 	[super dealloc];
 }
 @end
@@ -143,7 +145,7 @@
 // This initialization function gets called when we import the Ruby module.
 // It doesn't need to do anything because the RubyCocoa bridge will do
 // all the initialization work.
-// The rbiphonetest test framework automatically generates bundles for 
+// The rbiphonetest test framework automatically generates bundles for
 // each objective-c class containing the following line. These
 // can be used by your tests.
 void Init_FmdbMigrationManager() { }
