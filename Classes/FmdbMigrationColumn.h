@@ -6,7 +6,7 @@
 //  Copyright 2008 Mocra. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 
 @interface FmdbMigrationColumn : NSObject {

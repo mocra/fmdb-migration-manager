@@ -13,22 +13,28 @@
 	FMDatabase *db_;
 	NSArray *migrations_;
 	NSInteger currentVersion_;
+	NSString *schemaMigrationsTableName_;
 }
 @property (retain) FMDatabase *db;
 @property (retain) NSArray *migrations;
 @property (assign,readonly) NSInteger currentVersion;
+@property (readonly) NSString *schemaMigrationsTableName;
 
-+ (id)executeForDatabase:(FMDatabase *)db withMigrations:(NSArray *)migrations;
++ (id)executeForDatabasePath:(NSString *)aPath withMigrations:(NSArray *)migrations;
 
-- (id)initWithDatabase:(FMDatabase *)db;
+- (id)initWithDatabasePath:(NSString *)aPath;
 - (void)executeMigrations;
-- (int)currentVersion;
 
 #pragma mark -
 #pragma mark Internal methods
 
 - (void)initializeSchemaMigrationsTable;
-- (NSString *)schemaMigrationsTableName;
 - (void)performMigrations;
 - (void)recordVersionStateAfterMigrating:(NSInteger)version;
+
+#pragma mark -
+#pragma mark Migration up to a defined version
++ (id)executeForDatabasePath:(NSString *)aPath withMigrations:(NSArray *)migrations andMatchVersion:(NSInteger)aVersion;
+- (void)executeMigrationsAndMatchVersion:(NSInteger)aVersion;
+- (void)performMigrationsAndMatchVersion:(NSInteger)aVersion;
 @end

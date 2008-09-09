@@ -11,7 +11,7 @@ class TestFmdbMigrationManager < Test::Unit::TestCase
     
     context "run zero migrations" do
       setup do
-        @migration_manager = FmdbMigrationManager.executeForDatabase_withMigrations(@db, [])
+        @migration_manager = FmdbMigrationManager.executeForDatabasePath_withMigrations(@db_path, [])
       end
       
       should "have migration manager" do
@@ -28,7 +28,7 @@ class TestFmdbMigrationManager < Test::Unit::TestCase
       end
       
       should "still have version 0 if migrations run again" do
-        FmdbMigrationManager.executeForDatabase_withMigrations(@db, [])
+        FmdbMigrationManager.executeForDatabasePath_withMigrations(@db_path, [])
         assert_equal(0, @migration_manager.currentVersion)
       end
     end
@@ -39,11 +39,12 @@ class TestFmdbMigrationManager < Test::Unit::TestCase
             CreateAccounts.migration, 
             CreateTransactions.migration
         ]
-        @migration_manager = FmdbMigrationManager.executeForDatabase_withMigrations(@db, @migrations)
+        @migration_manager = FmdbMigrationManager.executeForDatabasePath_withMigrations(@db_path, @migrations)
       end
       
       teardown { @results.close if @results }
 
+      should_have_table "schema_info"
       should_have_table "accounts"
       should_have_table "transactions" do
         should_have_column "amount"
@@ -63,9 +64,10 @@ class TestFmdbMigrationManager < Test::Unit::TestCase
       context "and rerun with another migration" do
         setup do
           @migrations << AddTimestampToTransactions.migration
-          @migration_manager = FmdbMigrationManager.executeForDatabase_withMigrations(@db, @migrations)
+          @migration_manager = FmdbMigrationManager.executeForDatabasePath_withMigrations(@db_path, @migrations)
         end
 
+        should_have_table "schema_info"
         should_have_table "accounts"
         should_have_table "transactions" do
           should_have_column "amount"

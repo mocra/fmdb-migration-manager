@@ -10,41 +10,55 @@
 #import "FmdbMigration.h"
 #import "FmdbMigrationColumn.h"
 #import "FMResultSet.h"
-
-#ifndef INVALID_VERSION_NUMBER
-#define INVALID_VERSION_NUMBER -1
-#endif
+#import "FMDatabase.h"
 
 @implementation FmdbMigrationManager
 
-@synthesize db=db_, migrations=migrations_;
+@synthesize db=db_, migrations=migrations_, schemaMigrationsTableName=schemaMigrationsTableName_;
 
-+ (id)executeForDatabase:(FMDatabase *)db withMigrations:(NSArray *)migrations {
-	FmdbMigrationManager *manager = [[[self alloc] initWithDatabase:db] autorelease];
++ (id)executeForDatabasePath:(NSString *)aPath withMigrations:(NSArray *)migrations
+{
+	FmdbMigrationManager *manager = [[[self alloc] initWithDatabasePath:aPath] autorelease];
 	manager.migrations = migrations;
 	[manager executeMigrations];
 	return manager;
 }
 
-- (void)executeMigrations {
++ (id)executeForDatabasePath:(NSString *)aPath withMigrations:(NSArray *)migrations andMatchVersion:(NSInteger)aVersion
+{
+	FmdbMigrationManager *manager = [[[self alloc] initWithDatabasePath:aPath] autorelease];
+	manager.migrations = migrations;
+	[manager executeMigrationsAndMatchVersion:aVersion];
+	return manager;
+}
+
+- (void)executeMigrations 
+{
 	[self initializeSchemaMigrationsTable];
 	[self performMigrations];
+}
+
+- (void)executeMigrationsAndMatchVersion:(NSInteger)aVersion
+{
+	[self initializeSchemaMigrationsTable];
+	[self performMigrationsAndMatchVersion:aVersion];
 }
 
 #pragma mark -
 #pragma mark Internal methods
 
-- (void)initializeSchemaMigrationsTable {
+- (void)initializeSchemaMigrationsTable 
+{
 	// create schema_info table if doesn't already exist
-	NSString *tableName = [self schemaMigrationsTableName];
-	NSString *sql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (version INTEGER unique default 0)", tableName];
+	NSString *sql = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (version INTEGER unique default 0)", self.schemaMigrationsTableName];
 	[db_ executeUpdate:sql];
 	// TODO: add index on version column 'unique_schema_migrations'
 	
 	[self currentVersion]; // generates first version or stores version in currentVersion_
 }
 
-- (void)performMigrations {
+- (void)performMigrations 
+{
 	NSInteger i;
 	for(i = self.currentVersion; i < [self.migrations count]; ++i)
 	{
@@ -55,41 +69,60 @@
 	}
 }
 
+- (void)performMigrationsAndMatchVersion:(NSInteger)aVersion
+{
+	NSInteger i;
+	
+	aVersion = (aVersion>self.migrations.count)?self.migrations.count:aVersion;
+	
+	if (aVersion < self.currentVersion) {
+		for(i = self.currentVersion; i > aVersion; --i)
+		{
+			FmdbMigration *migration = [self.migrations objectAtIndex:i - 1];
+			[migration downWithDatabase:self.db];
+			[self recordVersionStateAfterMigrating:i - 1];
+			currentVersion_ = i - 1;
+		}
+	} else {
+		for(i = self.currentVersion; i < aVersion; ++i)
+		{
+			FmdbMigration *migration = [self.migrations objectAtIndex:i];
+			[migration upWithDatabase:self.db];
+			[self recordVersionStateAfterMigrating:i + 1];
+			currentVersion_ = i + 1;
+		}
+	}
+}
+
 - (NSInteger)currentVersion
 {
-	if(currentVersion_ == INVALID_VERSION_NUMBER)	{
-		NSString *tableName = [self schemaMigrationsTableName];
-		FMResultSet *rs = [db_ executeQuery:[NSString stringWithFormat:@"SELECT version FROM %@ ORDER BY version DESC", tableName]];
-		if([rs next]) {
-			currentVersion_ = [rs intForColumn:@"version"];
-		} else {
-			currentVersion_ = 0;
-			[db_ executeUpdate:[NSString stringWithFormat:@"INSERT INTO %@ (version) VALUES (0)", tableName]];
-		}
-		[rs close];
-	}
-	return currentVersion_;
+	return [db_ intForQuery:[NSString stringWithFormat:@"SELECT version FROM %@", self.schemaMigrationsTableName]];
 }
 
-- (void)recordVersionStateAfterMigrating:(NSInteger)version {
-	NSString *tableName = [self schemaMigrationsTableName];
-	if (version < self.currentVersion) {
-		[db_ executeUpdate:[NSString stringWithFormat:@"DELETE FROM %@ WHERE version = ?", tableName],
-							[NSNumber numberWithInteger:version]];
-	} else if (version > self.currentVersion) {
-		[db_ executeUpdate:[NSString stringWithFormat:@"INSERT INTO %@ (version) VALUES (?)", tableName],
-							[NSNumber numberWithInteger:version]];
-	}
+- (void)recordVersionStateAfterMigrating:(NSInteger)version 
+{
+	[db_ executeUpdate:[NSString stringWithFormat:@"UPDATE %@ SET version = ?", self.schemaMigrationsTableName], [NSNumber numberWithInteger:version]];
 }
 
-- (NSString *)schemaMigrationsTableName {
-	return @"schema_info";
+- (NSString *)schemaMigrationsTableName 
+{
+	schemaMigrationsTableName_ = @"schema_info";
+	return schemaMigrationsTableName_;
 }
 
-- (id)initWithDatabase:(FMDatabase *)db {
+- (id)initWithDatabasePath:(NSString *)aPath 
+{
 	if ([super init]) {
-		self.db = db;
-		currentVersion_ = INVALID_VERSION_NUMBER;
+		self.db = [FMDatabase databaseWithPath:aPath];
+		if (![db_ open]) {
+			NSLog(@"error opening the database for migration");
+			return nil;
+		}
+		
+		currentVersion_ = [db_ intForQuery:[NSString stringWithFormat:@"SELECT version FROM %@", self.schemaMigrationsTableName]];
+		if(currentVersion_ == 0)	{
+			[db_ executeUpdate:[NSString stringWithFormat:@"INSERT INTO %@ (version) VALUES (0)", self.schemaMigrationsTableName]];
+		}
 		return self;
 	}
 	return nil;
@@ -97,8 +130,10 @@
 
 - (void)dealloc
 {
+	[db_ close];
 	[db_ release];
 	[migrations_ release];
+	[schemaMigrationsTableName_ release];
 	
 	[super dealloc];
 }
