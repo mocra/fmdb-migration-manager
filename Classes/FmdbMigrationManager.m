@@ -35,13 +35,11 @@
 
 - (void)executeMigrations
 {
-	[self initializeSchemaMigrationsTable];
 	[self performMigrations];
 }
 
 - (void)executeMigrationsAndMatchVersion:(NSInteger)aVersion
 {
-	[self initializeSchemaMigrationsTable];
 	[self performMigrationsAndMatchVersion:aVersion];
 }
 
@@ -120,10 +118,14 @@
 			return nil;
 		}
 
+		[self initializeSchemaMigrationsTable];
+
 		currentVersion_ = [db_ intForQuery:[NSString stringWithFormat:@"SELECT version FROM %@", self.schemaMigrationsTableName]];
-		NSLog(@"%s %d", _cmd, currentVersion_);
 		if(currentVersion_ == 0)	{
-			[db_ executeUpdate:[NSString stringWithFormat:@"INSERT INTO %@ (version) VALUES (0)", self.schemaMigrationsTableName]];
+			NSInteger anyRows = [db_ intForQuery:[NSString stringWithFormat:@"SELECT count(version) FROM %@", self.schemaMigrationsTableName]];
+			if (anyRows == 0) {
+				[db_ executeUpdate:[NSString stringWithFormat:@"INSERT INTO %@ (version) VALUES (0)", self.schemaMigrationsTableName]];
+			}
 		}
 		return self;
 	}
