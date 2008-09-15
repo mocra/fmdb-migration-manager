@@ -21,12 +21,12 @@
 
 - (void)up 
 {
-	NSLog([NSString stringWithFormat:@"%s: -up method not implemented", [self className]]);
+	NSLog([NSString stringWithFormat:@"%s: -up method not implemented", NSStringFromClass([self class])]);
 }
 
 - (void)down 
 {
-	NSLog([NSString stringWithFormat:@"%s: -down method not implemented", [self className]]);
+	NSLog([NSString stringWithFormat:@"%s: -down method not implemented", NSStringFromClass([self class])]);
 }
 
 - (void)upWithDatabase:(FMDatabase *)db 
